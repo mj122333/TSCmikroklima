@@ -42,12 +42,12 @@ void loop() {
        int h = dht.readHumidity();
        float t = dht.readTemperature();
 
-       String serverPath = serverName + "?temp="+String(t)+"&vlaga="+String(h)+"&API_key=e32";
-       Serial.println(serverPath);
-       // Your Domain name with URL path or IP address with path
-       http.begin(serverPath.c_str());
+       http.begin(serverName.c_str());
+        http.addHeader("Content-Type", "application/json");
+  
+        String jsonData = "{\"MAC\" : \"MAC:00-B0-D0-63-C2-26\",\"temp\":{\"0xa4\" : 23.21,\"0xa5\" : 22.67,\"0xa6\" : 21.42}}";
 
-       int httpResponseCode = http.GET();
+       int httpResponseCode = http.POST(jsonData.c_str());
 
        if (httpResponseCode>0) {
          Serial.print("HTTP Response code: ");
