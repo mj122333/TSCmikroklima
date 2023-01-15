@@ -30,10 +30,22 @@ if(isset($data["temp"])){
     $temp = $data['temp'];
     
     foreach($temp as $adresa => $vrijednost) {
-        $sql_query = "select id from ?? where cvorID ='.$cvor_id." and adresa like '".$adresa."'";
+        $sql_query = "select id from temp_senzor where cvorID ='.$cvor_id." and adresa like '".$adresa."'";
         $result = mysqli_query($con, $sql_query);
         $row=mysqli_fetch_array($result);
-        $senzor_id=$row['id'];
+        $senzor_id=-1;
+        //ako ne postoji taj senzor u tablici TEMP_SENZOR, potrebno ga je unijeti u bazu sa nekim tipom koji oznacava da je trenutno NEDEFINIRAN->tip=100
+        // u slucaju da ne postoji, $row je null?
+        if ($row!=null)
+            $senzor_id=$row['id'];
+        else{
+            $sql_query = "insert into temp_senzor (adresa, id_cvor, tip) values ('".$adresa."', ".$cvor_id.", 100)";
+            $result = mysqli_query($con, $sql_query);
+            $sql_query = "select id from temp_senzor where cvorID ='.$cvor_id." and adresa like '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            $result = mysqli_query($con, $sql_query);
+            $row=mysqli_fetch_array($result);
+            $senzor_id=$row['id'];
+        }
         //$senzor_id = 1; #TODO: pročitaj id od senzora na temelju $adresa i $cvor_id
 
         #TODO: Zapiši podatke u mysql tablicu
