@@ -1,4 +1,5 @@
 <?php
+include "config.php" //sluzi za povezivanje s bazom podataka
 if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
     echo "Not a POST method";
     exit();
@@ -17,7 +18,12 @@ if(!isset($data["MAC"])){
 $mac = str_replace("-", "", $data["MAC"]);
 
 if(false)exit;# TODO: provjeriti je li čvor upaljen
-$cvor_id = 1; # TODO: poveži se na mysql i pročitati id čvora za MAC adresu
+$sql_query = "select id from ?? where macAddress like '".$mac."'";
+$result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
+$row = mysli_fetch_array($result);
+$cvor_id = $row['id']; //dohvacamo vrijednost ID-a
+
+//$cvor_id = 1; # TODO: poveži se na mysql i pročitati id čvora za MAC adresu
 
 
 if(isset($data["temp"])){
