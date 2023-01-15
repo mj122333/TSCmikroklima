@@ -1,5 +1,5 @@
 <?php
-include "config.php" //sluzi za povezivanje s bazom podataka
+include "config.php"; //sluzi za povezivanje s bazom podataka
 if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
     echo "Not a POST method";
     exit();
@@ -20,7 +20,7 @@ $mac = str_replace("-", "", $data["MAC"]);
 if(false)exit;# TODO: provjeriti je li čvor upaljen
 $sql_query = "select id from ?? where macAddress like '".$mac."'";  //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
 $result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
-$row = mysli_fetch_array($result);
+$row = mysqli_fetch_array($result);
 $cvor_id = $row['id']; //dohvacamo vrijednost ID-a
 
 //$cvor_id = 1; # TODO: poveži se na mysql i pročitati id čvora za MAC adresu
@@ -30,7 +30,7 @@ if(isset($data["temp"])){
     $temp = $data['temp'];
     
     foreach($temp as $adresa => $vrijednost) {
-        $sql_query = "select id from temp_senzor where cvorID ='.$cvor_id." and adresa like '".$adresa."'";
+        $sql_query = "select id from temp_senzor where cvorID =".$cvor_id." and adresa like '".$adresa."'";
         $result = mysqli_query($con, $sql_query);
         $row=mysqli_fetch_array($result);
         $senzor_id=-1;
@@ -41,7 +41,7 @@ if(isset($data["temp"])){
         else{
             $sql_query = "insert into temp_senzor (adresa, id_cvor, tip) values ('".$adresa."', ".$cvor_id.", 100)";
             $result = mysqli_query($con, $sql_query);
-            $sql_query = "select id from temp_senzor where cvorID ='.$cvor_id." and adresa like '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            $sql_query = "select id from temp_senzor where cvorID =".$cvor_id." and adresa like '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
             $row=mysqli_fetch_array($result);
             $senzor_id=$row['id'];
