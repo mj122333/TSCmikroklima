@@ -30,7 +30,11 @@ if(isset($data["temp"])){
     $temp = $data['temp'];
     
     foreach($temp as $adresa => $vrijednost) {
-        $senzor_id = 1; #TODO: pročitaj id od senzora na temelju $adresa i $cvor_id
+        $sql_query = "select id from ?? where cvorID ='.$cvor_id." and adresa like '".$adresa."'";
+        $result = mysqli_query($con, $sql_query);
+        $row=mysqli_fetch_array($result);
+        $senzor_id=$row['id'];
+        //$senzor_id = 1; #TODO: pročitaj id od senzora na temelju $adresa i $cvor_id
 
         #TODO: Zapiši podatke u mysql tablicu
         echo $adresa ." : ".$vrijednost."\n";
