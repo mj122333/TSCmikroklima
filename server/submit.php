@@ -18,7 +18,7 @@ if(!isset($data["MAC"])){
 $mac = str_replace("-", "", $data["MAC"]);
 
 if(false)exit;# TODO: provjeriti je li čvor upaljen
-$sql_query = "select id from ?? where macAddress like '".$mac."'";
+$sql_query = "select id from ?? where macAddress like '".$mac."'";  //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
 $result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
 $row = mysli_fetch_array($result);
 $cvor_id = $row['id']; //dohvacamo vrijednost ID-a
