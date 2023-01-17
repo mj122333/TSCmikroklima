@@ -1,5 +1,3 @@
-//test kod za 18b20 bez cayenne
-
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
@@ -8,7 +6,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-float senzori[4]; 
+float senzori[4];
 
 void setup(void)
 {
