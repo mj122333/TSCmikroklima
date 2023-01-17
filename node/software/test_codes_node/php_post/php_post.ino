@@ -78,7 +78,7 @@ void pushData(String a1, String a2, String a3, float t1, float t2, float t3, boo
        http.begin(serverName.c_str());
        http.addHeader("Content-Type", "application/json");
 
-       String jsonData =  "{\"MAC\" : \"" + WiFi.macAddress() + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
+       String jsonData =  "{\"MAC\" : \"" + WiFi.macAddress() + "\",\"temp\" : {\"" + a1 + "\" : " + t1 + ",\"" + a2 + "\" : " + t2 + " , \"" + a3 + "\" : " + t3 + "}, \"prozor\" : " + sp + "}";
 
        int httpResponseCode = http.POST(jsonData.c_str());
 
