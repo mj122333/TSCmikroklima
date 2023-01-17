@@ -82,7 +82,7 @@ function makeMacString($mac){
         $mac = makeMacString(mysqli_fetch_array(mysqli_query($con, $mac_query))['MAC']);
         echo $mac;
         echo "</td>";
-        echo "<td>" . $row['VRIEJDNOST'] . "</td>";
+        echo "<td>" . $row['VRIJEDNOST'] . "</td>";
         echo "<td>" . $row['VRIJEME'] . "</td>";
         echo "</tr>";
     }
