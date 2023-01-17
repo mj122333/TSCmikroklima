@@ -17,12 +17,12 @@ if(!isset($data["MAC"])){
 $mac = str_replace("-", "", str_replace(":", "", $data["MAC"]));
 
 
-$sql_query = "select ID from CVOR where MAC like '".$mac."'";  //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
+$sql_query = "select ID from CVOR where MAC = '".$mac."'";  //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
 
 $result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
 $row = mysqli_fetch_array($result);
-
 if($row ==null){
+    print_r($result);
     echo "Dodana nova MAC adresa: ".$mac."\n\n";
     $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('".$mac."', 0)"; 
     $result = mysqli_query($con, $sql_query);
@@ -36,7 +36,7 @@ if(isset($data["temp"])){
     $temp = $data['temp'];
     
     foreach($temp as $adresa => $vrijednost) {
-        $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA like '".$adresa."'";
+        $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'";
         $result = mysqli_query($con, $sql_query);
         $row=mysqli_fetch_array($result);
         $senzor_id=-1;
@@ -45,18 +45,26 @@ if(isset($data["temp"])){
         if ($row!=null)
             $senzor_id=$row['id'];
         else{
-            $sql_query = "insert into temp_senzor (adresa, id_cvor, tip) values ('".$adresa."', ".$cvor_id.", 100)";
-            $result = mysqli_query($con, $sql_query);
-            $sql_query = "select id from temp_senzor where cvorID =".$cvor_id." and adresa like '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            $sql_query = "insert into TEMP_SENZOR (ADRESA, ID_CVOR, TIP) values ('".$adresa."', ".$cvor_id.", 100)";
+            mysqli_query($con, $sql_query);
+            $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
             $row=mysqli_fetch_array($result);
-            $senzor_id=$row['id'];
+            $senzor_id=$row['ID'];
         }
-        //$senzor_id = 1; #TODO: pročitaj id od senzora na temelju $adresa i $cvor_id
-
-        #TODO: Zapiši podatke u mysql tablicu
+        
+        $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", 0)";
+        echo  "\n\n\n".$sql_query."\n\n\n";
+        $result = mysqli_query($con, $sql_query);
+        
         echo $adresa ." : ".$vrijednost."\n";
     }
+}
+
+if(isset($data["prozor"])){
+    $prozor = $data["prozor"];
+    $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", '".date("Y-m-d H:i:s")."')";
+    mysqli_query($con, $sql_query);
 }
 
 
