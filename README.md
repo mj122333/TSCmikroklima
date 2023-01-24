@@ -43,11 +43,11 @@ Objašnjenje:
     "#adresa senzora za temperaturu": "#temperatura u decimalnom zapisu",
     "adresa sljedećeg senzora za temperaturu": "#temperatura u decimalnom zapisu",
     "adresa n-tog senzora za temperaturu": "#temperatura u decimalnom zapisu"
-  }
-  "prozori" : {
-    "#pin senzora na prozoru": "#je li prozor otvoren",
-    "#pin sljedećeg senzora na prozoru": "#je li prozor otvoren",
-    "#pin n-tog senzora na prozoru": "#je li prozor otvoren",
+  },
+  "statusObjekt": {
+    "#pin senzora za status  objekta": "#je li prozor otvoren",
+    "#pin sljedećeg za status objekta": "#je li prozor otvoren",
+    "#pin n-tog za status objekta": "#je li prozor otvoren"
   }
 }
 ```
@@ -57,11 +57,11 @@ Primjer:
 {
   "MAC": "01-23-45-67-89-AB",
   "temp": {
-    "0xa4": 23.42,
-    "0xa5": 22,
-    "0xa6": 21.1
+    "0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0": 23.42,
+    "0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF1": 22,
+    "0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF2": 21.1
   },
-  "prozori": {
+  "statusObjekt": {
     "1": 1,
     "4": 0,
     "23": 1
