@@ -13,13 +13,16 @@ String serverName = "path";
 unsigned long lastTime = 0;
 unsigned long timerDelay = 60000;
 String macAdresa = "";
-String adr1 = "N/A", adr2 = "N/A", adr3 = "N/A";
-float senzori[3];
-bool zadnjeStanjeHall = LOW;
-bool stanjeProzor = HIGH;
-#define ONE_WIRE_BUS 11
-#define HALL_POWER 12
-#define HALL_READ 13
+String zaSlanjeT = "";
+String zaSlanjeH = "";
+int broj_senzora = 0;
+bool zadnjeStanjeHall[3];
+bool statusObjekt[3];
+#define ONE_WIRE_BUS 13
+#define HALL_POWER 16
+#define HALL_READ1 17
+#define HALL_READ2 18
+#define HALL_READ3 19
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -28,7 +31,7 @@ DeviceAddress Thermometer;
 void setup() {
    Serial.begin(115200);
    WiFi.begin(ssid, password);
-   Serial.println("Connecting");
+   Serial.println("Spajanje");
    while(WiFi.status() != WL_CONNECTED) {
      delay(500);
      Serial.print(".");
@@ -40,46 +43,57 @@ void setup() {
    macAdresa = WiFi.macAddress();
    Serial.println(macAdresa);
    pinMode(HALL_POWER, OUTPUT);
-   pinMode(HALL_READ, INPUT);
-   sensors.begin();
-   sensors.getAddress(Thermometer, 0);
-   adr1 = printAddress(Thermometer);
-   sensors.getAddress(Thermometer, 1);
-   adr2 = printAddress(Thermometer);
-   sensors.getAddress(Thermometer, 2);
-   adr3 = printAddress(Thermometer);
+   pinMode(HALL_READ1, INPUT);
+   pinMode(HALL_READ2, INPUT);
+   pinMode(HALL_READ3, INPUT);
 }
 
 void loop() {
+  /*
+   * slanje podataka, određeni interval vremena (timerDelay)
+   * ako dođe do promjene u statusObjekt informacije se šalju odmah
+   * interval slanja podataka neovisan je o promjeni statusaObjekta (šalje podatke na timerDelay)
+   */
   if ((millis() - lastTime) > timerDelay) {
-    Atepmeratura();
-    pushData(adr1, adr2, adr3, senzori[0], senzori[1], senzori[2], stanjeProzor);
+    mjeri_temperaturu(); //funkcija koja ažurira temperature
+    pushData(); //funkcija koja šalje vrijednosti Gotalu i Biškupu
     lastTime = millis();
   }
 
-  digitalWrite(HALL_POWER, HIGH);
-  stanjeProzor = digitalRead(HALL_READ);
-  if(zadnjeStanjeHall != stanjeProzor){
-    Atepmeratura();
-    pushData(adr1, adr2, adr3, senzori[0], senzori[1], senzori[2], stanjeProzor);
-    zadnjeStanjeHall = stanjeProzor;
-    lastTime = millis();
-    delay(100);
-  }
-
-  digitalWrite(HALL_POWER, LOW);
-  
+  hallRefresh(); //"interrupt" funkcija statusObjekt-a (šalje podatke kod promjene, ne čeka timerDelay)
 }
 
-void pushData(String a1, String a2, String a3, float t1, float t2, float t3, bool sp){
+void hallRefresh(){ //void funkcija očitanja statusaObjekta
+  digitalWrite(HALL_POWER, HIGH); //reset hall senzora
+  digitalWrite(HALL_POWER, LOW);
+
+  zaSlanjeH = "";
+  zaSlanjeH = ",\"statusObjekt\" : {";
+  for(int i = 0; i < 3; i++){
+    statusObjekt[i] = digitalRead(17+i); //17, 18, 19 su ulazi senzora statusObjekt-a
+    if(zadnjeStanjeHall[i] != statusObjekt[i]){
+      zadnjeStanjeHall[i] = statusObjekt[i]; //ako je stanje različito prijašnjem, zapisuje se u listu
+      lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah
+    }
+    zaSlanjeH += "\"" + String(17+i) + "\" : \"" + statusObjekt[i] + "\""; //spremanje stanja u zaSlanjeH string (u json formatu)
+    if(i != 2) zaSlanjeH += ",";
+  }
+  zaSlanjeH += "}";
+}
+
+void pushData(){
   if(WiFi.status()== WL_CONNECTED){
        HTTPClient http;
 
        http.begin(serverName.c_str());
        http.addHeader("Content-Type", "application/json");
 
-       String jsonData =  "{\"MAC\" : \"" + WiFi.macAddress() + "\",\"temp\" : {\"" + a1 + "\" : " + t1 + ",\"" + a2 + "\" : " + t2 + " , \"" + a3 + "\" : " + t3 + "}, \"prozor\" : " + sp + "}";
-
+       //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
+       String jsonData =  "{\"MAC\" : \"" + macAdresa + "\"," + zaSlanjeT + zaSlanjeH + "\"}";
+       Serial.println(jsonData);
+       zaSlanjeT = ""; //reset stringa za temperature
+       zaSlanjeH = ""; //reset stringa za statusObjekta (hall)
+       
        int httpResponseCode = http.POST(jsonData.c_str());
 
        if (httpResponseCode>0) {
@@ -96,30 +110,35 @@ void pushData(String a1, String a2, String a3, float t1, float t2, float t3, boo
      }
      else {
        Serial.println("WiFi Disconnected");
-       ESP.restart();
+       ESP.restart(); //ako esp32 nije spojen na WiFi u trenutku slanja poruke, restarta se
      }
 }
 
-String printAddress(DeviceAddress deviceAddress)
+void mjeri_temperaturu(){
+  sensors.begin(); //inicijalizacija senzora u svakom krugu očitanja (omogućuje hot-swap)
+  broj_senzora = sensors.getDeviceCount(); //spremanje broja senzora
+  sensors.requestTemperatures(); //očitavanje temperatura pomoću biblioteke
+  
+  zaSlanjeT += "\"temp\" : {\""; //početak json dijela s temperaturnim senzorima
+  for(int sen = 0; sen < broj_senzora; sen++){
+    sensors.getAddress(Thermometer, sen);
+    zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
+    zaSlanjeT += "\" : \"";
+    zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
+    if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
+  }
+  zaSlanjeT += "\"}";
+}
+
+String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperaturnih senzora
 { 
     String adresa = "";
   for (uint8_t i = 0; i < 8; i++)
   {
     adresa += "0x";
     if (deviceAddress[i] < 0x10) adresa += "0";
-    adresa += (deviceAddress[i], HEX);
+    adresa += String(deviceAddress[i], HEX);
     if (i < 7) adresa += ", ";
   }
   return adresa;
-}
-
-void Atepmeratura(){
-  sensors.requestTemperatures(); 
-
-  for(int i = 0; i < 3; i++){
-  Serial.print("\t" + String (i+1) + ". senzor: ");
-  senzori[i]=sensors.getTempCByIndex(i);
-  Serial.print(senzori[i]);
-  }
-  Serial.println();
 }
