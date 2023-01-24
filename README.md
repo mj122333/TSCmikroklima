@@ -63,7 +63,7 @@ Primjer:
   }
 }
 ```
-[Primjer upita u Postman-u](https://github.com/mj122333/TSCmikroklima/blob/main/server/skola-IoT.postman_collection.json)
+[Primjer upita u Postman-u](https://github.com/mj122333/TSCmikroklima/blob/main/server/skola-IoT.postman_collection.json) (importati u Postman)
 
 
 
