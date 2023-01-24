@@ -85,5 +85,5 @@ Primjer:
 
 
 
-[contributors-shield]: https://img.shields.io/github/contributors/mj122333/TSCmikroklima.svg
+[contributors-shield]: https://img.shields.io/github/contributors/mj122333/TSCmikroklima.svg?style=for-the-badge
 [contributors-url]: https://github.com/mj122333/TSCmikroklima/graphs/contributors
