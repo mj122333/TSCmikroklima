@@ -7,11 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 if($data == null) {
-    echo "JSON data not valid!";
+    echo "JSON data nije u redu!";
     exit();
 }
 if(!isset($data["MAC"])){
-    echo "Missing MAC address";
+    echo "Nedostaje MAC adresa";
     exit();
 }
 
@@ -23,12 +23,14 @@ $sql_query = "select ID from CVOR where MAC = '".$mac."'";  //#TODO eventualno p
 $result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
 $row = mysqli_fetch_array($result);
 if($row ==null){
-    print_r($result);
-
-    echo "Dodana nova MAC adresa: ".$mac."\n\n";
     $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('".$mac."', 1)"; 
+    mysqli_query($con, $sql_query);
+    echo "Dodana nova MAC adresa: ".$mac."\n\n";
+    $sql_query = "select ID from CVOR where MAC = '".$mac."'";
     $result = mysqli_query($con, $sql_query);
 }
+
+echo "MAC adresa: ".$data["MAC"]."\n";
 
 $cvor_id = $row['ID']; //dohvacamo vrijednost ID-a
 echo "Cvor id: ".$cvor_id."\n";
@@ -42,21 +44,19 @@ if(isset($data["temp"])){
         $result = mysqli_query($con, $sql_query);
         $row=mysqli_fetch_array($result);
         $senzor_id=-1;
-        if ($row!=null) //ako je senzor temperature u TEMP_SENZOR tablici pročitamo njegov ID i spremimo ga u $senzor_id
-            $senzor_id=$row['id'];
-        else{//ako senzor nije u TEMP_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
+        if ($row==null) //ako senzor nije u TEMP_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
+        {
             $sql_query = "insert into TEMP_SENZOR (ADRESA, ID_CVOR, TIP) values ('".$adresa."', ".$cvor_id.", 100)";
             mysqli_query($con, $sql_query);
             echo "Dodan je novi senzor temperature u tablicu TEMP_SENZOR: ('".$adresa."', ".$cvor_id.", 100)";
             $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
             $row=mysqli_fetch_array($result);
-            $senzor_id=$row['ID'];
         }
-
+        $senzor_id=$row['id'];
         $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
         $result = mysqli_query($con, $sql_query);
-        echo "Dodana nova vrijednost u TEMP tablicu: ". $adresa ." : ".$vrijednost."\n";
+        echo "Dodana nova vrijednost u TEMP tablicu: adresa senzorea: ".$adresa.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
     }
 }
 
