@@ -9,12 +9,7 @@
 		{
 			"name": "Slanje podataka",
 			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {
-					"connection": true,
-					"accept-encoding": true,
-					"accept": true,
-					"user-agent": true
-				}
+				"disabledSystemHeaders": {}
 			},
 			"request": {
 				"method": "POST",
@@ -27,7 +22,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"MAC\": \"01-23-45-67-89-AB\",\r\n  \"temp\": {\r\n    \"0xa4\": 23.42,\r\n    \"0xa5\": 22,\r\n    \"0xa6\": 21.1\r\n  },\r\n    \"prozori\" : {\r\n    \"1\": 1,\r\n    \"4\": 0,\r\n    \"23\": 1\r\n  }\r\n}"
+					"raw": "{\r\n  \"MAC\": \"01-23-45-67-89-AB\",\r\n  \"temp\": {\r\n    \"0x28, 0xc2, 0x20, 0x76, 0xe0, 0xe1, 0x3c, 0xdd\": 23.42,\r\n    \"0xa5\": 22,\r\n    \"0xa6\": 21.1\r\n  },\r\n    \"statusObjekt\" : {\r\n    \"1\": 1,\r\n    \"4\": 0,\r\n    \"23\": 1\r\n  }\r\n}"
 				},
 				"url": {
 					"raw": "https://jambrosic.xyz/mikroklima/submit.php",
