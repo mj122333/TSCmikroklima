@@ -46,8 +46,8 @@ Objašnjenje:
   },
   "statusObjekt": {
     "#pin senzora za status  objekta": "#je li prozor otvoren",
-    "#pin sljedećeg za status objekta": "#je li prozor otvoren",
-    "#pin n-tog za status objekta": "#je li prozor otvoren"
+    "#pin sljedećeg senzora za status objekta": "#je li prozor otvoren",
+    "#pin n-tog senzora za status objekta": "#je li prozor otvoren"
   }
 }
 ```
