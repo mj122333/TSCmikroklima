@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "e88c451c-1d99-4753-9d2d-f52a518dcf68",
+		"name": "skola-IoT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23890773"
+	},
+	"item": [
+		{
+			"name": "Slanje podataka",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"MAC\": \"01-23-45-67-89-AB\",\r\n  \"temp\": {\r\n    \"0xa4\": 23.42,\r\n    \"0xa5\": 22,\r\n    \"0xa6\": 21.1\r\n  },\r\n    \"prozori\" : {\r\n    \"1\": 1,\r\n    \"4\": 0,\r\n    \"23\": 1\r\n  }\r\n}"
+				},
+				"url": {
+					"raw": "https://jambrosic.xyz/mikroklima/submit.php",
+					"protocol": "https",
+					"host": [
+						"jambrosic",
+						"xyz"
+					],
+					"path": [
+						"mikroklima",
+						"submit.php"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
