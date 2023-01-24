@@ -1,4 +1,9 @@
+<div align="center">
+
 [![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+
+</div>
 
 # TSC Mikroklima
 
@@ -63,7 +68,7 @@ Primjer:
   }
 }
 ```
-[Primjer upita u Postman-u](https://github.com/mj122333/TSCmikroklima/blob/main/server/skola-IoT.postman_collection.json)
+[Primjer upita u Postman-u](https://github.com/mj122333/TSCmikroklima/blob/main/server/skola-IoT.postman_collection.json) (importati u Postman)
 
 
 
@@ -87,3 +92,6 @@ Primjer:
 
 [contributors-shield]: https://img.shields.io/github/contributors/mj122333/TSCmikroklima.svg?style=for-the-badge
 [contributors-url]: https://github.com/mj122333/TSCmikroklima/graphs/contributors
+
+[stars-shield]: https://img.shields.io/github/stars/mj122333/TSCmikroklima.svg?style=for-the-badge
+[stars-url]: https://github.com/mj122333/TSCmikroklima/stargazers

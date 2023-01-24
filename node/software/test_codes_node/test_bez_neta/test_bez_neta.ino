@@ -1,17 +1,9 @@
-//kod za custom implementaciju...
-
-#include <WiFi.h>
-#include <HTTPClient.h>
+//kod za test jsona, OFFLINE!!
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-const char* ssid = "ssid";
-const char* password = "pass";
-
-String serverName = "path";
-
 unsigned long lastTime = 0;
-unsigned long timerDelay = 60000;
+unsigned long timerDelay = 10000;
 String macAdresa = "";
 String zaSlanjeT = "";
 String zaSlanjeH = "";
@@ -30,17 +22,7 @@ DeviceAddress Thermometer;
    
 void setup() {
    Serial.begin(115200);
-   WiFi.begin(ssid, password);
-   Serial.println("Spajanje");
-   while(WiFi.status() != WL_CONNECTED) {
-     delay(500);
-     Serial.print(".");
-   }
-   Serial.println("");
-   Serial.print("IP: ");
-   Serial.println(WiFi.localIP());
-   Serial.print("MAC: ");
-   macAdresa = WiFi.macAddress();
+   macAdresa = "aa-B0-D0-63-C2-55";
    Serial.println(macAdresa);
    pinMode(HALL_POWER, OUTPUT);
    pinMode(HALL_READ1, INPUT);
@@ -82,36 +64,11 @@ void hallRefresh(){ //void funkcija očitanja statusaObjekta
 }
 
 void pushData(){
-  if(WiFi.status()== WL_CONNECTED){
-       HTTPClient http;
-
-       http.begin(serverName.c_str());
-       http.addHeader("Content-Type", "application/json");
-
        //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
        String jsonData =  "{\"MAC\" : \"" + macAdresa + "\"," + zaSlanjeT + zaSlanjeH + "\"}";
        Serial.println(jsonData);
        zaSlanjeT = ""; //reset stringa za temperature
        zaSlanjeH = ""; //reset stringa za statusObjekta (hall)
-       
-       int httpResponseCode = http.POST(jsonData.c_str());
-
-       if (httpResponseCode>0) {
-         Serial.print("HTTP Response code: ");
-         Serial.println(httpResponseCode);
-         String payload = http.getString();
-         Serial.println(payload);
-       }
-       else {
-         Serial.print("Error code: ");
-         Serial.println(httpResponseCode);
-       }
-       http.end();
-     }
-     else {
-       Serial.println("WiFi Disconnected");
-       ESP.restart(); //ako esp32 nije spojen na WiFi u trenutku slanja poruke, restarta se
-     }
 }
 
 void mjeri_temperaturu(){
