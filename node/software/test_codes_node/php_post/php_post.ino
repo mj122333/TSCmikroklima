@@ -64,8 +64,9 @@ void loop() {
 }
 
 void hallRefresh(){ //void funkcija očitanja statusaObjekta
-  digitalWrite(HALL_POWER, HIGH); //reset hall senzora
-  digitalWrite(HALL_POWER, LOW);
+  digitalWrite(HALL_POWER, LOW); //reset hall senzora
+  delay(10);
+  digitalWrite(HALL_POWER, HIGH);
 
   zaSlanjeH = "";
   zaSlanjeH = ",\"statusObjekt\" : {";
@@ -89,7 +90,7 @@ void pushData(){
        http.addHeader("Content-Type", "application/json");
 
        //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
-       String jsonData =  "{\"MAC\" : \"" + macAdresa + "\"," + zaSlanjeT + zaSlanjeH + "\"}";
+       String jsonData =  "{\"MAC\" : \"" + macAdresa + "\"," + zaSlanjeT + zaSlanjeH + "}";
        Serial.println(jsonData);
        zaSlanjeT = ""; //reset stringa za temperature
        zaSlanjeH = ""; //reset stringa za statusObjekta (hall)
