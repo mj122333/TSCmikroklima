@@ -14,6 +14,7 @@ if(!isset($data["MAC"])){
     echo "Missing MAC address";
     exit();
 }
+
 $mac = str_replace("-", "", str_replace(":", "", $data["MAC"]));
 
 
@@ -23,8 +24,9 @@ $result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
 $row = mysqli_fetch_array($result);
 if($row ==null){
     print_r($result);
+
     echo "Dodana nova MAC adresa: ".$mac."\n\n";
-    $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('".$mac."', 0)"; 
+    $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('".$mac."', 1)"; 
     $result = mysqli_query($con, $sql_query);
 }
 
@@ -40,30 +42,27 @@ if(isset($data["temp"])){
         $result = mysqli_query($con, $sql_query);
         $row=mysqli_fetch_array($result);
         $senzor_id=-1;
-        //ako ne postoji taj senzor u tablici TEMP_SENZOR, potrebno ga je unijeti u bazu sa nekim tipom koji oznacava da je trenutno NEDEFINIRAN->tip=100
-        // u slucaju da ne postoji, $row je null?
-        if ($row!=null)
+        if ($row!=null) //ako je senzor temperature u TEMP_SENZOR tablici pročitamo njegov ID i spremimo ga u $senzor_id
             $senzor_id=$row['id'];
-        else{
+        else{//ako senzor nije u TEMP_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
             $sql_query = "insert into TEMP_SENZOR (ADRESA, ID_CVOR, TIP) values ('".$adresa."', ".$cvor_id.", 100)";
             mysqli_query($con, $sql_query);
+            echo "Dodan je novi senzor temperature u tablicu TEMP_SENZOR: ('".$adresa."', ".$cvor_id.", 100)";
             $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
             $row=mysqli_fetch_array($result);
             $senzor_id=$row['ID'];
         }
-        
-        $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", 0)";
-        echo  "\n\n\n".$sql_query."\n\n\n";
+
+        $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
         $result = mysqli_query($con, $sql_query);
-        
-        echo $adresa ." : ".$vrijednost."\n";
+        echo "Dodana nova vrijednost u TEMP tablicu: ". $adresa ." : ".$vrijednost."\n";
     }
 }
 
 if(isset($data["prozor"])){
     $prozor = $data["prozor"];
-    $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", '".date("Y-m-d H:i:s")."')";
+    $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())";
     mysqli_query($con, $sql_query);
 }
 
