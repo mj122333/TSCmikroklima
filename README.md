@@ -1,0 +1,89 @@
+[![Contributors][contributors-shield]][contributors-url]
+
+# TSC Mikroklima
+
+TSC Mikroklima je projekt koji se bavi izgradnjom IoT sistema za mjerenje raznih parametara u školi.  
+Sistem koristi senzore koji mjere: 
+* temperaturu
+* vlagu
+* pritisak zraka
+* otvorene prozore
+
+
+Podaci se prikupljaju i prenose na cloud platformu gdje se obrađuju i prikazuju na različite načine, kao što su grafovi, tabele i mape. Cilj projekta
+je pružiti školi uvid u stanje učionica i pomoći u održavanju optimalnih uvjeta za učenje. Također, sistem će biti dostupan putem web sučelja za lakše praćenje i 
+upravljanje.Sada radimo na izgradnji i testiranju sistema i planiramo ga uključiti u školske aktivnosti u najkraćem mogućem roku.
+
+
+Ovaj projekt sadrži sljedeće jezike/frameworke/biblioteke:
+* [![C++][Cpp]][Cpp-url]
+* [![JSON][JSON]][JSON-url]
+* [![PHP][PHP]][PHP-url]
+* [![MySQL][MySQL]][MySQL-url]
+* [![JS][JS]][JS-url]
+
+
+
+<!-- GETTING STARTED -->
+## Korištenje
+pojašnjanje kako koristiti djelove ovog projekta.
+
+### JSON upit za [submit.php](https://github.com/mj122333/TSCmikroklima/blob/main/server/submit.php)
+Objašnjenje:
+
+```JSON
+{
+  "MAC": "#MAC adresa uređaja koji šalje POST zahtjev",
+  "temp": {
+    "#adresa senzora za temperaturu": "#temperatura u decimalnom zapisu",
+    "adresa sljedećeg senzora za temperaturu": "#temperatura u decimalnom zapisu",
+    "adresa n-tog senzora za temperaturu": "#temperatura u decimalnom zapisu"
+  }
+  "prozori" : {
+    "#pin senzora na prozoru": "#je li prozor otvoren",
+    "#pin sljedećeg senzora na prozoru": "#je li prozor otvoren",
+    "#pin n-tog senzora na prozoru": "#je li prozor otvoren",
+  }
+}
+```
+
+Primjer:
+```JSON
+{
+  "MAC": "01-23-45-67-89-AB",
+  "temp": {
+    "0xa4": 23.42,
+    "0xa5": 22,
+    "0xa6": 21.1
+  },
+  "prozori": {
+    "1": 1,
+    "4": 0,
+    "23": 1
+  }
+}
+```
+[Primjer upita u Postman-u](https://github.com/mj122333/TSCmikroklima/blob/main/server/skola-IoT.postman_collection.json)
+
+
+
+[CPP]: https://img.shields.io/badge/C++-909DAB?style=for-the-badge&logo=cplusplus&logoColor=00599C
+[CPP-url]: https://isocpp.org/
+
+[JSON]: https://img.shields.io/badge/JSON-000?style=for-the-badge&logo=JSON
+[JSON-url]: https://www.json.org/
+
+[PHP]: https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=333
+[PHP-url]: https://isocpp.org/
+
+[MySQL]: https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=FFF
+[MySQL-url]: https://www.mysql.com/
+
+[JS]: https://img.shields.io/badge/javascript-000000?style=for-the-badge&logo=javascript&logoColor=F7DF1E
+[JS-url]: https://www.javascript.com/
+
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/mj122333/TSCmikroklima.svg?style=for-the-badge
+[contributors-url]: https://github.com/mj122333/TSCmikroklima/graphs/contributors
