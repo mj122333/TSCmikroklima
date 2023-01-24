@@ -56,14 +56,31 @@ if(isset($data["temp"])){
         $senzor_id=$row['id'];
         $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
         $result = mysqli_query($con, $sql_query);
-        echo "Dodana nova vrijednost u TEMP tablicu: adresa senzorea: ".$adresa.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
+        echo "Dodana novi zapis u TEMP tablicu: adresa senzora: ".$adresa.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
     }
 }
 
-if(isset($data["prozor"])){
-    $prozor = $data["prozor"];
-    $sql_query = "insert into TEMP (ID_SENZOR, VRIEJDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())";
-    mysqli_query($con, $sql_query);
+if(isset($data["statusObjekt"])){
+    $prozor = $data["statusObjekt"];
+    foreach($objekt as $pin => $vrijednost) {
+        $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'";
+        $result = mysqli_query($con, $sql_query);
+        $row=mysqli_fetch_array($result);
+        $senzor_id=-1;
+        if ($row==null) //ako senzor nije u STATUSOBJEKT_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
+        {
+            $sql_query = "insert into STATUSOBJEKT_SENZOR (PIN, ID_CVOR, TIP) values ('".$pin."', ".$cvor_id.", 100)";
+            mysqli_query($con, $sql_query);
+            echo "Dodan je novi senzor za status objekta u tablicu STATUSOBJEKT_SENZOR: ('".$pin."', ".$cvor_id.", 100)";
+            $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            $result = mysqli_query($con, $sql_query);
+            $row=mysqli_fetch_array($result);
+        }
+        $senzor_id=$row['id'];
+        $sql_query = "insert into STATUSOBJEKT (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
+        $result = mysqli_query($con, $sql_query);
+        echo "Dodana novi zapis u STATUSOBJEKT tablicu: adresa senzora: ".$pin.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
+    }
 }
 
 
