@@ -111,7 +111,10 @@ void pushData(){
      }
      else {
        Serial.println("WiFi Disconnected");
-       ESP.restart(); //ako esp32 nije spojen na WiFi u trenutku slanja poruke, restarta se
+       while(WiFi.status() != WL_CONNECTED) {      //umjesto restarta ponovno spajanje? #TODO provjeriti
+           delay(500);              
+           //yield();                              //ne bi bilo zgodno yieldad?
+   }
      }
 }
 
