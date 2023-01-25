@@ -123,18 +123,20 @@ void mjeri_temperaturu(){
   
   zaSlanjeT += "\"temp\" : {\""; //početak json dijela s temperaturnim senzorima
   for(int sen = 0; sen < broj_senzora; sen++){
-    sensors.getAddress(Thermometer, sen);
-    zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
-    zaSlanjeT += "\" : \"";
-    zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
-    if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
+    if(sensors.getTempCByIndex(sen) > -100){ //ako uspije pročitati temperaturu senzora
+      sensors.getAddress(Thermometer, sen);
+      zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
+      zaSlanjeT += "\" : \"";
+      zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
+      if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
+    }
   }
   zaSlanjeT += "\"}";
 }
 
 String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperaturnih senzora
 { 
-    String adresa = "";
+    String adresa = "0x";
   for (uint8_t i = 0; i < 8; i++)
   {
     adresa += String(deviceAddress[i], HEX);
