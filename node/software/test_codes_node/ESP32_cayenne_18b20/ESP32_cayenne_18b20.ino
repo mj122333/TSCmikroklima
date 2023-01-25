@@ -1,3 +1,5 @@
+//18b20 za cayenne integraciju
+
 //#define CAYENNE_DEBUG
 #define CAYENNE_PRINT Serial
 #include <CayenneMQTTESP32.h>

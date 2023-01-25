@@ -42,8 +42,8 @@ if(isset($data["temp"])){
     foreach($temp as $neobradjenaAdresa => $vrijednost) {
 
         $hexAdresa = str_replace(",", "", str_replace(" ", "", str_replace("0x", "", $neobradjenaAdresa)));//Pretvaranje dobivene adrese u 16char hex zapis
-        $adresa = "";
-        for($i=0;$i<strlen($hexAdresa);$i+=2) $adresa .= chr(hexdec(substr($hexAdresa,$i,2)));//Pretvaranje 16 char hex zapis u 8 char ascii zapis
+        $adresa = $hexAdresa;
+        //for($i=0;$i<strlen($hexAdresa);$i+=2) $adresa .= chr(hexdec(substr($hexAdresa,$i,2)));//Pretvaranje 16 char hex zapis u 8 char ascii zapis
 
 
         $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'";
@@ -67,7 +67,7 @@ if(isset($data["temp"])){
 }
 
 if(isset($data["statusObjekt"])){
-    $prozor = $data["statusObjekt"];
+    $objekt = $data["statusObjekt"];
     foreach($objekt as $pin => $vrijednost) {
         $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'";
         $result = mysqli_query($con, $sql_query);
