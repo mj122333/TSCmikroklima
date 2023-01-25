@@ -28,11 +28,11 @@
 					"raw": "https://URL_EXAMPLE/submit.php",
 					"protocol": "https",
 					"host": [
-						"jambrosic",
-						"xyz"
+						"SERVER_EXAMPLE",
+						"DOMAIN_EXAMPLE"
 					],
 					"path": [
-						"mikroklima",
+						"PATH_EXAMPLE",
 						"submit.php"
 					]
 				}
