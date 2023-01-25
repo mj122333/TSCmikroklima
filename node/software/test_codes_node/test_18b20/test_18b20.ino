@@ -1,3 +1,5 @@
+//kod za testiranje senzora 18b20
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
