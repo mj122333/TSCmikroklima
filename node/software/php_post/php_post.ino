@@ -136,7 +136,7 @@ void mjeri_temperaturu(){
 
 String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperaturnih senzora
 { 
-    String adresa = "";
+    String adresa = "0x";
   for (uint8_t i = 0; i < 8; i++)
   {
     adresa += String(deviceAddress[i], HEX);
