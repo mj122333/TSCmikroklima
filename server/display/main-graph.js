@@ -1,3 +1,5 @@
+document.querySelector('body').style.margin = "0px 2.5vw";
+
 const ctx = document.getElementById('myChart');
 
 let chart = new Chart(ctx, {
