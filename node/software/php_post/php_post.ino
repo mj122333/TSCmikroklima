@@ -87,6 +87,7 @@ void pushData(){
        HTTPClient http;
 
        http.begin(serverName.c_str());
+       Serial.println(serverName.c_str());
        http.addHeader("Content-Type", "application/json");
 
        //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
@@ -136,10 +137,7 @@ String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperatur
     String adresa = "";
   for (uint8_t i = 0; i < 8; i++)
   {
-    adresa += "0x";
-    if (deviceAddress[i] < 0x10) adresa += "0";
     adresa += String(deviceAddress[i], HEX);
-    if (i < 7) adresa += ", ";
   }
   return adresa;
 }
