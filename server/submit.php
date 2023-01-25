@@ -67,7 +67,7 @@ if(isset($data["temp"])){
 }
 
 if(isset($data["statusObjekt"])){
-    $prozor = $data["statusObjekt"];
+    $objekt = $data["statusObjekt"];
     foreach($objekt as $pin => $vrijednost) {
         $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'";
         $result = mysqli_query($con, $sql_query);
