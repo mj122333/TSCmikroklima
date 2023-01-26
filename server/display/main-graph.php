@@ -1,11 +1,37 @@
 <?php 
 include "..//config.php";
 
+
 $debug = false;
 if(!isset($_GET["prostorija"])){
     echo "U zahtjevu nema informacije o adresi.\n";
     exit();
 }
+
+if(isset($_GET["sata"])) $SATA = $_GET["sata"];
+else $SATA = 48;
+
+
+
+
+
+function createDataChartJS($con, $table, $id_sensor) {
+    $sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." order by VRIJEME desc limit ".$GLOBALS["SATA"]*60;
+    $result = mysqli_query($con, $sql_query);
+    $dataset="[";
+    while ($row = mysqli_fetch_array($result)){
+        $vrijeme = strtotime($row["VRIJEME"]);
+        if(time()-$GLOBALS["SATA"]*60*60 > $vrijeme) continue;
+        $dataset.= "{x:'".$row["VRIJEME"]."',y:".(($staro_vrijeme < $vrijeme+600 /*sekundi*/) ? $row["VRIJEDNOST"] : "NaN")."},";
+        $staro_vrijeme = strtotime($row["VRIJEME"]);
+    }
+    return rtrim(str_replace("\n", "",$dataset), ",")."]";
+  }
+
+
+
+
+
 
 $sql_query = "SELECT * FROM PROSTORIJA WHERE NAZIV='".$_GET["prostorija"]."'";
 $result = mysqli_query($con, $sql_query);
@@ -44,62 +70,41 @@ while ($row = mysqli_fetch_array($result)){
 
 
 
-
 //Čitanje i spremanje podataka o sobnoj temperaturi
-$sql_query = "SELECT * FROM TEMP WHERE ID_SENZOR=".$sobnaID;
-$result = mysqli_query($con, $sql_query);
-if($debug) echo $sql_query;
-$dataset="[";
-while ($row = mysqli_fetch_array($result)){
-    $dataset.= "{x:'".$row["VRIJEME"]."',y:'".$row["VRIJEDNOST"]."'},";
-}
-$sobnaData= rtrim(str_replace("\n", "",$dataset), ",")."]";
+$sobnaData = createDataChartJS($con,"TEMP", $sobnaID);
 
 
 //Čitanje i spremanje podataka o temperaturi radijatora
-$sql_query = "SELECT * FROM TEMP WHERE ID_SENZOR=".$radijatorID;
-$result = mysqli_query($con, $sql_query);
-if($debug) echo $sql_query;
-$dataset="[";
-while ($row = mysqli_fetch_array($result)){
-    $dataset.= "{x:'".$row["VRIJEME"]."',y:'".$row["VRIJEDNOST"]."'},";
-}
-$radijatorData= rtrim(str_replace("\n", "",$dataset), ",")."]";
+
+$radijatorData= createDataChartJS($con,"TEMP", $radijatorID);
 
 
 //Čitanje i spremanje podataka o temperaturi kilme
-$sql_query = "SELECT * FROM TEMP WHERE ID_SENZOR=".$kilmaID;
-$result = mysqli_query($con, $sql_query);
-if($debug) echo $sql_query;
-$dataset="[";
-while ($row = mysqli_fetch_array($result)){
-    $dataset.= "{x:'".$row["VRIJEME"]."',y:'".$row["VRIJEDNOST"]."'},";
-}
-$klimaData= rtrim(str_replace("\n", "",$dataset), ",")."]";
 
+$klimaData= createDataChartJS($con,"TEMP", $kilmaID);
 
 
 
 
 
 //Čitanje i spremanje podataka o stanju prozora
-$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=".$prozorID;
+$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=".$prozorID." order by VRIJEME desc limit ".$SATA*60;
 $result = mysqli_query($con, $sql_query);
 if($debug) echo $sql_query;
 $dataset="[";
 while ($row = mysqli_fetch_array($result)){
+    $vrijeme = strtotime($row["VRIJEME"]);
+    if(time()-$GLOBALS["SATA"]*60*60 > $vrijeme) continue;
     $dataset.= "{x:'".$row["VRIJEME"]."',y:'".(($row["VRIJEDNOST"]==0 ) ? "ZATVOREN" : "OTVOREN")."'},";
 }
 $prozorData= rtrim(str_replace("\n", "",$dataset), ",")."]";
 
 ?>
 
-<div>
-  <canvas id="myChart"></canvas>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.0/chartjs-plugin-zoom.min.js"></script>
 <script>
     let sobnaData = <?php echo $sobnaData;?>;
     let radijatorData = <?php echo $radijatorData;?>;
@@ -107,3 +112,8 @@ $prozorData= rtrim(str_replace("\n", "",$dataset), ",")."]";
     let prozorData = <?php echo $prozorData;?>;
 </script>
 <script src="main-graph.js"></script>
+
+
+<div style="margin: 0 2.5vw">
+  <canvas id="myChart"></canvas>
+</div>

@@ -1,8 +1,9 @@
-document.querySelector('body').style.margin = "0px 2.5vw";
 
-const ctx = document.getElementById('myChart');
 
-let chart = new Chart(ctx, {
+
+const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
+const config = {
 	type: 'line',
 	data: {
 		datasets: [{
@@ -11,6 +12,11 @@ let chart = new Chart(ctx, {
 				borderColor: "#F00",
 				backgroundColor: "#F00",
 				pointStyle: false,
+				segment: {
+					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+					borderDash: ctx => skipped(ctx, [6, 6]),
+				  },
+				spanGaps: true
 			},
 			{
 				label: 'Sobna',
@@ -18,6 +24,11 @@ let chart = new Chart(ctx, {
 				borderColor: "#0F0",
 				backgroundColor: "#0F0",
 				pointStyle: false,
+				segment: {
+					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+					borderDash: ctx => skipped(ctx, [6, 6]),
+				  },
+				spanGaps: true
 			},
 			{
 				label: 'Klima',
@@ -25,6 +36,11 @@ let chart = new Chart(ctx, {
 				borderColor: "#22F",
 				backgroundColor: "#22F",
 				pointStyle: false,
+				segment: {
+					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+					borderDash: ctx => skipped(ctx, [6, 6]),
+				  },
+				spanGaps: true
 			},
 			{
 				label: 'Prozor',
@@ -34,6 +50,11 @@ let chart = new Chart(ctx, {
 				stepped: true,
 				pointStyle: false,
 				yAxisID: 'y2',
+				segment: {
+					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+					borderDash: ctx => skipped(ctx, [6, 6]),
+				  },
+				spanGaps: true
 			}
 		],
 	},
@@ -44,6 +65,14 @@ let chart = new Chart(ctx, {
 				display: true,
 				text: 'Temperatura - otvoreni prozor',
 			},
+			pan: {
+				enabled: true,
+				mode: "xy",
+			  },
+			  zoom: {
+				wheel: {enabled: true,},
+				mode: 'xy',
+			  }
 		},
 		scales: {
 			y: {
@@ -69,10 +98,33 @@ let chart = new Chart(ctx, {
 			x: {
 				type: "time",
 				time: {
-					unit: 'hour'
-
-				}
+					unit: 'hour',
+					displayFormats: {
+						'hour':'HH:mm'
+					 }
+				},
 			}
-		}
+		},
+		zoom: {
+			zoom: {
+			  wheel: {enabled: true,},
+			  mode: 'x',   
+			},
+			pan: {
+			  enabled: true,
+			  mode: 'x',
+			},
+			limits: {
+			  x: { min: radijatorData[0].x, max: radijatorData[radijatorData.length-1].x },
+			},
+		  },
+
+
 	}
-});
+};
+
+
+window.onload = function() {
+	const ctx = document.getElementById('myChart');
+	new Chart(ctx, config);
+}
