@@ -2,12 +2,12 @@
 
 <?php
 include "config.php";
-$sql_query = "SELECT ADRESA FROM PROSTORIJA";
+$sql_query = "SELECT NAZIV FROM PROSTORIJA";
 $result = mysqli_query($con, $sql_query);
-$rows = array();
+$aktivne_prostorije = array();
 $i = 0;
 while ($row = mysqli_fetch_array($result)){
-    $rows[$i] = $row;
+    $aktivne_prostorije[$i] = $row;
     $i++;
 }
 ?>
@@ -17,24 +17,11 @@ while ($row = mysqli_fetch_array($result)){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tlocrt TSČ-a</title>
-
-    <style>
-        .flex {
-            display: flex;
-            height: 100%;
-            width: 100%;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: space-around;
-            flex-wrap: wrap;
-        }
-        .flex > svg{
-            height: 45%;
-        }
-    </style>
+    <link rel="stylesheet" href="css/tlocrt.css">
 
 </head>
 <body>
+    <iframe id="graf" class="graf graf-off" src="display/main-graph.php"></iframe>
     <div class="flex">
         <svg id="tlocrt-prizemlje1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1179.04 859.74">
             <g id="_19" data-name="19"><rect x="345.35" y="630.22" width="203.48" height="228.52" style="fill:#bfbfbf;stroke:#150000;stroke-miterlimit:10;stroke-width:2px"/></g>
@@ -68,11 +55,9 @@ while ($row = mysqli_fetch_array($result)){
 
 </body>
 
+<script type="text/javascript" src="jquery/jquery.js"></script>
 <script>
-    var prostorije = <?php echo json_encode($rows)?>;
-    prostorije.forEach(function (prost){
-        var prostorijaSVG = document.getElementById("_" + prost["ADRESA"]).firstChild;
-        prostorijaSVG.style.fill = "#0f0"
-    })
+    var aktivneProstorije = <?php echo json_encode($aktivne_prostorije)?>;
 </script>
+<script type="text/javascript" src="tlocrt.js"></script>
 </html>
