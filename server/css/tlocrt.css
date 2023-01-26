@@ -1,0 +1,33 @@
+.flex {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.flex > svg{
+    height: 45%;
+}
+
+.ucionice-text{
+    font: italic 30px sans-serif;
+    color: red;
+}
+
+.graf {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.graf-off {
+    width: 0px;
+    height: 0px;
+}
+
+.graf-on{
+    width: 50%;
+    height: 50%;
+}
