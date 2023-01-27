@@ -5,10 +5,10 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-const char* ssid = "ssid";
-const char* password = "pass";
+const char* ssid = "";
+const char* password = "";
 
-String serverName = "path";
+String serverName = "";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 60000;
@@ -90,8 +90,8 @@ void pushData(){
        Serial.println(serverName.c_str());
        http.addHeader("Content-Type", "application/json");
 
-       //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
-       String jsonData =  "{\"MAC\" : \"" + macAdresa + "\"," + zaSlanjeT + zaSlanjeH + "}";
+       //String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"key\" : \"esp32\",\"temp\" : {\"" + a1 + "\" : \"" + t1 + "\",\"" + a2 + "\" : \"" + t2 + "\" , \"" + a3 + "\" : \"" + t3 + "\"}, \"prozor\" : \"" + sp + "\"}";
+       String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"key\" : \"\"," + zaSlanjeT + zaSlanjeH + "}";
        Serial.println(jsonData);
        zaSlanjeT = ""; //reset stringa za temperature
        zaSlanjeH = ""; //reset stringa za statusObjekta (hall)
