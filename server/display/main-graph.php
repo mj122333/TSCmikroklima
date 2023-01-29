@@ -16,7 +16,8 @@ else $SATA = 48;
 
 
 function createDataChartJS($con, $table, $id_sensor) {
-    $sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." order by VRIJEME desc limit ".$GLOBALS["SATA"]*60;
+    //$sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." order by VRIJEME desc limit ".$GLOBALS["SATA"]*60;
+    $sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." and vrijeme>(CURDATE()-INTERVAL 1 day) order by VRIJEME desc;
     $result = mysqli_query($con, $sql_query);
     $dataset="[";
     while ($row = mysqli_fetch_array($result)){
