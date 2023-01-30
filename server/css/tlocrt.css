@@ -13,7 +13,12 @@
 
 .ucionice-text{
     font: italic 30px sans-serif;
-    color: red;
+    fill: black;
+}
+
+.temp-text{
+    font: bold 20px sans-serif;
+    fill: white;
 }
 
 .graf {
