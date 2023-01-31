@@ -11,17 +11,21 @@ for ($i = 0; $row = mysqli_fetch_array($result); $i++){
     $aktivne_prostorije[$i] = $row;
 }
 
-for ($i = 0; $i < count($nazivi_prostorija); $i++){
-    $sql_query = "SELECT ID FROM TEMP_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " AND TIP=0";
+$temperatura_prostorija = array();
+for ($i = 0; $i < count($aktivne_prostorije); $i++){
+    $sql_query = "SELECT ID FROM TEMP_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
     $result = mysqli_query($con, $sql_query);
-    $id_senzora = mysqli_fetch_array($result)[0];
-    $sql_query = "SELECT VRIJEDNOST FROM TEMP WHERE ID_SENZOR=" . $id_senzora . " ORDER BY VRIJEME DESC LIMIT 1";
-    $result = mysqli_query($con, $sql_query);
-    $temperatura_prost = mysqli_fetch_array($result)["VRIJEDNOST"];
-    print_r($aktivne_prostorije[$i]['NAZIV']);
-    echo " -> SOBNA TEMPERATURA: ";
-    print_r($temperatura_prost);
-    echo "<br>";
+    $temperatura_prost = array();
+    for ($j = 0; $j < 3; $j++) {
+        $id_senzora = mysqli_fetch_array($result)[0];
+
+        $temp_query = "SELECT VRIJEDNOST FROM TEMP WHERE ID_SENZOR=" . $id_senzora . " ORDER BY VRIJEME DESC LIMIT 1";
+        $temp_result = mysqli_query($con, $temp_query);
+        $vrijednost = mysqli_fetch_array($temp_result)["VRIJEDNOST"];
+        $temperatura_prost[$j] = $vrijednost;
+    }
+
+    $temperatura_prostorija[$nazivi_prostorija[$i]] = $temperatura_prost;
 }
 ?>
 
@@ -54,6 +58,7 @@ for ($i = 0; $i < count($nazivi_prostorija); $i++){
                 <g id="_30" data-name="30"><rect x="990.22" y="368.48" width="95.48" height="116.17" style="fill:#bfbfbf;stroke:#150000;stroke-miterlimit:10;stroke-width:2px"/></g
                 <g id="Back"><polygon points="1 191.96 769.52 191.96 769.52 1 911.96 1 911.96 191.96 990.22 191.96 990.22 368.48 990.22 484.65 1085.7 484.65 1163.96 484.65 1163.96 578.57 990.22 578.57 990.22 634.91 198.22 634.91 198.22 475.26 1 475.26 1 276.48 1 191.96" style="fill:#e6e6e6;stroke:#150000;stroke-miterlimit:10;stroke-width:2px"/></g></svg>
             <svg id="tlocrt-kat2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1659.57 931.74">
+                <g id="back"><polygon points="59.7 341.44 59.7 1 1 1 1 930.74 59.7 930.74 59.7 447.09 1355.7 447.09 1355.7 604.39 1658.57 604.39 1658.57 188.83 1355.7 188.83 1355.7 341.44 59.7 341.44" style="fill:#e6e6e6;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
                 <g id="_L31" data-name="31"><rect x="59.7" y="78.48" width="335.74" height="262.96" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
                 <g id="_L32" data-name="32"><rect x="395.43" y="78.48" width="342.78" height="262.96" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
                 <g id="_33" data-name="33"><rect x="738.22" y="188.83" width="136.17" height="152.61" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
@@ -63,8 +68,7 @@ for ($i = 0; $i < count($nazivi_prostorija); $i++){
                 <g id="_37" data-name="37"><rect x="874.39" y="447.09" width="342.78" height="267.65" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
                 <g id="_38" data-name="38"><rect x="738.22" y="447.09" width="136.17" height="157.3" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
                 <g id="_39" data-name="39"><rect x="395.43" y="447.09" width="342.78" height="267.65" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
-                <g id="_40" data-name="40"><rect x="59.7" y="447.09" width="335.74" height="267.65" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g>
-                <g id="back"><polygon points="59.7 341.44 59.7 1 1 1 1 930.74 59.7 930.74 59.7 447.09 1355.7 447.09 1355.7 604.39 1658.57 604.39 1658.57 188.83 1355.7 188.83 1355.7 341.44 59.7 341.44" style="fill:#e6e6e6;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g></svg>
+                <g id="_40" data-name="40"><rect x="59.7" y="447.09" width="335.74" height="267.65" style="fill:#bfbfbf;stroke:#000;stroke-miterlimit:10;stroke-width:2px"/></g></svg>
         </div>
 
 </body>
@@ -72,6 +76,7 @@ for ($i = 0; $i < count($nazivi_prostorija); $i++){
 <script type="text/javascript" src="jquery/jquery.js"></script>
 <script>
     var naziviAktivnihProstorija = <?php echo json_encode($nazivi_prostorija)?>;
+    var temperatureProstorija = <?php echo json_encode($temperatura_prostorija)?>;
 </script>
 <script type="text/javascript" src="tlocrt.js"></script>
 </html>
