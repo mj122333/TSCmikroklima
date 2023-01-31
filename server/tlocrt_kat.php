@@ -12,6 +12,8 @@ for ($i = 0; $row = mysqli_fetch_array($result); $i++){
 }
 
 $temperatura_prostorija = array();
+$otvoreni_prozori = array();
+$greske = array();
 for ($i = 0; $i < count($aktivne_prostorije); $i++){
     $sql_query = "SELECT ID FROM TEMP_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
     $result = mysqli_query($con, $sql_query);
@@ -26,6 +28,20 @@ for ($i = 0; $i < count($aktivne_prostorije); $i++){
     }
 
     $temperatura_prostorija[$nazivi_prostorija[$i]] = $temperatura_prost;
+
+    $sql_query = "SELECT ID FROM STATUSOBJEKT_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
+    $result = mysqli_query($con, $sql_query);
+    $id_senzora = mysqli_fetch_array($result)[0];
+    $prozor_query = "SELECT VRIJEDNOST FROM STATUSOBJEKT WHERE ID_SENZOR=" . $id_senzora . " ORDER BY VRIJEME DESC LIMIT 1";
+    $otvoreni = mysqli_fetch_array(mysqli_query($con, $prozor_query))['VRIJEDNOST'];
+    $otvoreni_prozori[$nazivi_prostorija[$i]] = $otvoreni;
+
+    $senzor_query = "SELECT ID FROM STATUSOBJEKT_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'];
+    $senzor_id = mysqli_fetch_array(mysqli_query($con, $sql_query))['ID'];
+    //kada je u zadnjih 8h postojalo vrijeme kada je tempratura nekok senzora bila više od 35 stupneva, a prozor otvoren
+    $greska_query = "SELECT * FROM TEMP WHERE VRIJEDNOST >= 35 AND VRIJEME IN (SELECT VRIJEME FROM STATUSOBJEKT WHERE VRIJEDNOST=1 AND ID_SENZOR=" . $senzor_id . " AND VRIJEME >= NOW() - INTERVAL 8 HOUR)";
+    $result = mysqli_query($con, $greska_query);
+    $greske[$nazivi_prostorija[$i]] = (mysqli_fetch_array($result) != null);
 }
 ?>
 
@@ -77,6 +93,8 @@ for ($i = 0; $i < count($aktivne_prostorije); $i++){
 <script>
     var naziviAktivnihProstorija = <?php echo json_encode($nazivi_prostorija)?>;
     var temperatureProstorija = <?php echo json_encode($temperatura_prostorija)?>;
+    var otvoreniProzori = <?php echo json_encode($otvoreni_prozori)?>;
+    var greske = <?php echo json_encode($greske)?>;
 </script>
 <script type="text/javascript" src="tlocrt.js"></script>
 </html>

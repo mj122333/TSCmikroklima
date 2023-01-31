@@ -43,6 +43,9 @@ function makeMacString($mac){
 
         <table id="table_cvor">
             <tr>
+                <th colspan="3">CVOREVI</th>
+            </tr>
+            <tr>
                 <th>ID</th>
                 <th>MAC adresa</th>
                 <th>Aktivno</th>
@@ -62,6 +65,9 @@ function makeMacString($mac){
         <br>
         <table id="table_temp">
             <tr>
+                <th colspan="5">TEMPERATURE</th>
+            </tr>
+            <tr>
                 <th>ID</th>
                 <th>ID senzora</th>
                 <th>MAC adresa čvora</th>
@@ -69,7 +75,7 @@ function makeMacString($mac){
                 <th>Vrijeme</th>
             </tr>
             <?php
-            $sql_query = "SELECT * FROM TEMP";
+            $sql_query = "SELECT * FROM TEMP WHERE VRIJEME >= NOW() - INTERVAL 1 DAY";
             $result = mysqli_query($con, $sql_query);
             while ($row = mysqli_fetch_array($result)){
                 echo "<tr>";
@@ -92,19 +98,24 @@ function makeMacString($mac){
         <br>
         <table id="table_prozor">
             <tr>
+                <th colspan="4">STATUS OBJEKTA</th>
+            </tr>
+            <tr>
                 <th>ID</th>
                 <th>MAC adresa čvora</th>
                 <th>Otvoreni</th>
                 <th>Vrijeme</th>
             </tr>
             <?php
-            $sql_query = "SELECT * FROM STATUSOBJEKT";
+            $sql_query = "SELECT * FROM STATUSOBJEKT WHERE VRIJEME >= NOW() - INTERVAL 1 DAY";
             $result = mysqli_query($con, $sql_query);
             while ($row = mysqli_fetch_array($result)){
                 echo "<tr>";
                 echo "<td>" . $row['ID'] . "</td>";
                 echo "<td>";
-                $mac_query = "SELECT MAC FROM CVOR WHERE ID=" . $row['ID_CVOR'];
+                $id_cvor_query = "SELECT ID_CVOR FROM STATUSOBJEKT_SENZOR WHERE ID=" . $row['ID_SENZOR'];
+                $id_cvor = mysqli_fetch_array(mysqli_query($con, $id_cvor_query))['ID_CVOR'];
+                $mac_query = "SELECT MAC FROM CVOR WHERE ID=" . $id_cvor;
                 $mac = makeMacString(mysqli_fetch_array(mysqli_query($con, $mac_query))['MAC']);
                 echo $mac;
                 echo "</td>";
@@ -116,6 +127,9 @@ function makeMacString($mac){
         </table>
         <br>
         <table id="table_temp_senzor">
+            <tr>
+                <th colspan="4">SENZORI TEMPERATURE</th>
+            </tr>
             <tr>
                 <th>ID</th>
                 <th>ID čvora</th>
@@ -140,7 +154,40 @@ function makeMacString($mac){
             ?>
         </table>
         <br>
+        <table id="table_statusobjekt_senzor">
+            <tr>
+                <th colspan="5">SENZORI STATUSA OBJEKTA</th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>ID čvora</th>
+                <th>MAC adresa čvora</th>
+                <th>Pin</th>
+                <th>Tip</th>
+            </tr>
+            <?php
+            $sql_query = "SELECT * FROM STATUSOBJEKT_SENZOR";
+            $result = mysqli_query($con, $sql_query);
+            while ($row = mysqli_fetch_array($result)){
+                echo "<tr>";
+                echo "<td>" . $row['ID'] . "</td>";
+                echo "<td>" . $row['ID_CVOR'] . "</td>";
+                echo "<td>";
+                $mac_query = "SELECT MAC FROM CVOR WHERE ID=" . $row['ID_CVOR'];
+                $mac = makeMacString(mysqli_fetch_array(mysqli_query($con, $mac_query))['MAC']);
+                echo $mac;
+                echo "</td>";
+                echo "<td>" . $row['PIN'] . "</td>";
+                echo "<td>" . $row['TIP'] . "</td>";
+                echo "</tr>";
+            }
+            ?>
+        </table>
+        <br>
         <table id="prostorija">
+            <tr>
+                <th colspan="4">AKTIVNE PROSTORIJE</th>
+            </tr>
             <tr>
                 <th>ID</th>
                 <th>ID čvora</th>

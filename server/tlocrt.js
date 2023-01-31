@@ -1,9 +1,11 @@
 $(document).ready(function() {
     naziviAktivnihProstorija.forEach(function (prost){
+        //postavljanje boje aktivnih prostorija
         let prostorija = document.getElementById("_" + prost);
         let prostorijaRect = prostorija.firstChild;
         prostorijaRect.style.fill = "#8ee09c";
 
+        //prikazivanje temperature na tlocrtu
         let x = parseFloat(prostorijaRect.getAttributeNS(null, "x"));
         let y = parseFloat(prostorijaRect.getAttributeNS(null, "y"));
         const RECT_OFFSET_X = 10;
@@ -37,6 +39,44 @@ $(document).ready(function() {
             prostorija.appendChild(tempText);
         }
 
+        //prikaz otvorenog prozora na tlocrtu
+        x = parseFloat(prostorijaRect.getAttributeNS(null, "x"))
+            + parseFloat(prostorijaRect.getAttributeNS(null, "width"));
+        y = parseFloat(prostorijaRect.getAttributeNS(null, "y"));
+
+        const ICON_OFFSET_X = 10;
+        const ICON_OFFSET_Y = 0;
+        const ICON_WIDTH = 80;
+        const ICON_HEIGHT = 80;
+
+        for (i = 0; i < 2; i++){
+            let icon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            let rectX = (x - ICON_OFFSET_X - ICON_WIDTH);
+            let rectY = (y + ICON_OFFSET_Y + i * (ICON_OFFSET_Y + ICON_HEIGHT));
+            icon.setAttributeNS(null, "x", "" + rectX);
+            icon.setAttributeNS(null, "y", "" + rectY);
+            icon.setAttributeNS(null, "width", "" + ICON_WIDTH);
+            icon.setAttributeNS(null, "height", "" + ICON_HEIGHT);
+            if (i === 0) {
+                icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/oprez_zuto.svg");
+
+                //console.log(temperatureProstorija[prost][0]);
+                if (otvoreniProzori[prost] === "1" && temperatureProstorija[prost][0] > 35.0){
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/oprez_crveno.svg");
+                }
+                else if (greske[prost] === false){
+                    icon.setAttributeNS(null, "visibility", "hidden");
+                }
+            }
+            else if (i === 1){
+                //console.log(otvoreniProzori[prost]);
+                if (otvoreniProzori[prost] === "1")
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/prozor_otvoren.svg");
+                else
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/prozor_zatvoren.svg");
+            }
+            prostorija.append(icon);
+        }
     });
 
     //sve prostorije koje su pravokutnici (ucionice i kabineti)
