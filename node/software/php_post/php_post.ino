@@ -151,14 +151,14 @@ void mjeri_temperaturu(){
   delay(10);
   zaSlanjeT += "\"temp\" : {\""; //početak json dijela s temperaturnim senzorima
   for(int sen = 0; sen < broj_senzora; sen++){
-    if(sensors.getTempCByIndex(sen) == -127){ //ako ne uspije pročitati temperaturu senzora
-      sensors.requestTemperatures();
-    }
-      sensors.getAddress(Thermometer, sen);
-      zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
-      zaSlanjeT += "\" : \"";
-      zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
-      if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
+    if(sensors.getTempCByIndex(sen) == -127) 
+      continue;
+    sensors.getAddress(Thermometer, sen);
+    zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
+    zaSlanjeT += "\" : \"";
+    zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
+    if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
+    delay(5);
   }
   zaSlanjeT += "\"}";
 }
