@@ -16,7 +16,9 @@ const config = {
 					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
 					borderDash: ctx => skipped(ctx, [6, 6]),
 				  },
-				spanGaps: true
+				spanGaps: true,
+				cubicInterpolationMode: 'monotone',
+				tension: 0
 			},
 			{
 				label: 'Sobna',
@@ -28,7 +30,9 @@ const config = {
 					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
 					borderDash: ctx => skipped(ctx, [6, 6]),
 				  },
-				spanGaps: true
+				spanGaps: true,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4
 			},
 			{
 				label: 'Klima',
@@ -40,7 +44,9 @@ const config = {
 					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
 					borderDash: ctx => skipped(ctx, [6, 6]),
 				  },
-				spanGaps: true
+				spanGaps: true,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4
 			},
 			{
 				label: 'Prozor',
@@ -54,7 +60,9 @@ const config = {
 					borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
 					borderDash: ctx => skipped(ctx, [6, 6]),
 				  },
-				spanGaps: true
+				spanGaps: true,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4
 			}
 		],
 	},
@@ -78,7 +86,7 @@ const config = {
 			y: {
 				type: 'linear',
 				position: 'left',
-				stack: 'demo',
+				stack: 'main',
 				stackWeight: 4,
 				border: {
 					color: "red"
@@ -89,7 +97,7 @@ const config = {
 				labels: ['OTVOREN', 'ZATVOREN'],
 				offset: true,
 				position: 'left',
-				stack: 'demo',
+				stack: 'main',
 				stackWeight: 1,
 				border: {
 					color: "blue"

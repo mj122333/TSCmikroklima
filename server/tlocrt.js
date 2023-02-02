@@ -2,6 +2,7 @@ $(document).ready(function() {
     naziviAktivnihProstorija.forEach(function (prost){
         //postavljanje boje aktivnih prostorija
         let prostorija = document.getElementById("_" + prost);
+        if (prostorija === null) return;
         let prostorijaRect = prostorija.firstChild;
         prostorijaRect.style.fill = "#8ee09c";
 

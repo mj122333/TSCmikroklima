@@ -17,9 +17,10 @@ else $SATA = 48;
 
 function createDataChartJS($con, $table, $id_sensor) {
     //$sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." order by VRIJEME desc limit ".$GLOBALS["SATA"]*60;
-    $sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." and vrijeme>(CURDATE()-INTERVAL 1 day) order by VRIJEME desc;
+    $sql_query = "SELECT * FROM ".$table." WHERE ID_SENZOR=".$id_sensor." and vrijeme>(CURDATE()-INTERVAL ".$GLOBALS["SATA"]." HOUR) order by VRIJEME desc";
     $result = mysqli_query($con, $sql_query);
     $dataset="[";
+        
     while ($row = mysqli_fetch_array($result)){
         $vrijeme = strtotime($row["VRIJEME"]);
         if(time()-$GLOBALS["SATA"]*60*60 > $vrijeme) continue;
@@ -89,7 +90,7 @@ $klimaData= createDataChartJS($con,"TEMP", $kilmaID);
 
 
 //Čitanje i spremanje podataka o stanju prozora
-$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=".$prozorID." order by VRIJEME desc limit ".$SATA*60;
+$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=".$prozorID." and vrijeme>(CURDATE()-INTERVAL ".$SATA." HOUR) order by VRIJEME desc";
 $result = mysqli_query($con, $sql_query);
 if($debug) echo $sql_query;
 $dataset="[";
