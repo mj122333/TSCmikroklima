@@ -78,15 +78,22 @@ void hallRefresh(){ //void funkcija očitanja statusaObjekta
   digitalWrite(HALL_POWER, LOW); //reset hall senzora
   delay(10);
   digitalWrite(HALL_POWER, HIGH);
-
+  delay(100); //pricekati da se hallovi stabiliziraju?
   zaSlanjeH = "";
   zaSlanjeH = ",\"statusObjekt\" : {";
   for(int i = 0; i < 3; i++){
     statusObjekt[i] = digitalRead(17+i); //17, 18, 19 su ulazi senzora statusObjekt-a
-    if(zadnjeStanjeHall[i] != statusObjekt[i]){
+    delay(20);
+    if (statusObjekt[i] != digitalRead(17+i))
+        continue;
+/*    
+    //ovaj dio moramo prodiskutirati
+    if(zadnjeStanjeHall[i] != statusObjekt[i]){//
       zadnjeStanjeHall[i] = statusObjekt[i]; //ako je stanje različito prijašnjem, zapisuje se u listu
       lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah
     }
+*/
+    lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah
     zaSlanjeH += "\"" + String(17+i) + "\" : \"" + statusObjekt[i] + "\""; //spremanje stanja u zaSlanjeH string (u json formatu)
     if(i != 2) zaSlanjeH += ",";
   }
