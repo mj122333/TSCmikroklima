@@ -84,16 +84,14 @@ void hallRefresh(){ //void funkcija očitanja statusaObjekta
   for(int i = 0; i < 3; i++){
     statusObjekt[i] = digitalRead(17+i); //17, 18, 19 su ulazi senzora statusObjekt-a
     delay(20);
-    if (statusObjekt[i] != digitalRead(17+i))
+    if (statusObjekt[i] != digitalRead(17+i)) //ako dva slijedna ocitanja daju razlicite vrijednosti -> preskoci
         continue;
-/*    
+   
     //ovaj dio moramo prodiskutirati
     if(zadnjeStanjeHall[i] != statusObjekt[i]){//
       zadnjeStanjeHall[i] = statusObjekt[i]; //ako je stanje različito prijašnjem, zapisuje se u listu
-      lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah
+      lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah (ukoliko je doslo do promjene barem jednog senzora)
     }
-*/
-    lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah
     zaSlanjeH += "\"" + String(17+i) + "\" : \"" + statusObjekt[i] + "\""; //spremanje stanja u zaSlanjeH string (u json formatu)
     if(i != 2) zaSlanjeH += ",";
   }
