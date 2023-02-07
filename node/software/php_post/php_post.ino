@@ -67,11 +67,12 @@ void loop() {
   if ((millis() - lastTime) > timerDelay) {
     mjeri_temperaturu(); //funkcija koja ažurira temperature
     get_metadata(); //WiFi status i baterija
+    hallRefresh(); //svaku minutu
     pushData(); //funkcija koja šalje vrijednosti Gotalu i Biškupu
     lastTime = millis();
   }
 
-  hallRefresh(); //"interrupt" funkcija statusObjekt-a (šalje podatke kod promjene, ne čeka timerDelay)
+  //hallRefresh(); //"interrupt" funkcija statusObjekt-a (šalje podatke kod promjene, ne čeka timerDelay)
 }
 
 void hallRefresh(){ //void funkcija očitanja statusaObjekta
@@ -163,7 +164,7 @@ void mjeri_temperaturu(){
     zaSlanjeT += "\" : \"";
     zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
     if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
-    delay(5);
+    delay(50);
   }
   zaSlanjeT += "\"}";
 }
