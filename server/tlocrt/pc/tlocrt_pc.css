@@ -25,14 +25,14 @@
     position: absolute;
     bottom: 1rem;
     right: 1rem;
+    width: 50%;
+    height: 50%;
 }
 
 .graf-off {
-    width: 0px;
-    height: 0px;
+    display: none;
 }
 
 .graf-on{
-    width: 50%;
-    height: 50%;
+    display: block;
 }
