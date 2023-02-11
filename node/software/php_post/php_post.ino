@@ -150,8 +150,10 @@ void get_metadata(){
 }
 
 void mjeri_temperaturu(){
+  digitalWrite(B20_POWER, HIGH);
+  delay(100);
   sensors.begin(); //inicijalizacija senzora u svakom krugu očitanja (omogućuje hot-swap)
-  delay(10);
+  delay(100);
   broj_senzora = sensors.getDeviceCount(); //spremanje broja senzora
   sensors.requestTemperatures(); //očitavanje temperatura pomoću biblioteke
   delay(10);
@@ -164,9 +166,10 @@ void mjeri_temperaturu(){
     zaSlanjeT += "\" : \"";
     zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
     if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
-    delay(100); //reading cooldown, u fazi testiranja/traženja problema spajanja očitanja
+    delay(50); //reading cooldown, u fazi testiranja/traženja problema spajanja očitanja
   }
   zaSlanjeT += "\"}";
+  digitalWrite(B20_POWER, LOW);
 }
 
 String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperaturnih senzora
