@@ -1,0 +1,21 @@
+.container{
+    width: 100%;
+    height: 100%;
+}
+
+.container > svg{
+    object-fit: fill;
+    width: 100%;
+    height: 100%;
+}
+
+
+.ucionice-text{
+    font: italic 30px sans-serif;
+    fill: black;
+}
+
+.temp-text{
+    font: bold 20px sans-serif;
+    fill: white;
+}

@@ -46,9 +46,9 @@ $(document).ready(function() {
         y = parseFloat(prostorijaRect.getAttributeNS(null, "y"));
 
         const ICON_OFFSET_X = 10;
-        const ICON_OFFSET_Y = 0;
-        const ICON_WIDTH = 80;
-        const ICON_HEIGHT = 80;
+        const ICON_OFFSET_Y = 10;
+        const ICON_WIDTH = 60;
+        const ICON_HEIGHT = 60;
 
         for (i = 0; i < 2; i++){
             let icon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
@@ -58,23 +58,23 @@ $(document).ready(function() {
             icon.setAttributeNS(null, "y", "" + rectY);
             icon.setAttributeNS(null, "width", "" + ICON_WIDTH);
             icon.setAttributeNS(null, "height", "" + ICON_HEIGHT);
-            if (i === 0) {
-                icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/oprez_zuto.svg");
+            //ikona upozorenja
+            if (i === 1) {
+                icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "../ikone/oprez_zuto.svg");
 
-                //console.log(temperatureProstorija[prost][0]);
-                if (otvoreniProzori[prost] === "1" && temperatureProstorija[prost][0] > 35.0){
-                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/oprez_crveno.svg");
+                if (otvoreniProzori[prost] === "1" && (temperatureProstorija[prost][0] > 35.0 || temperatureProstorija[prost][1] > 35.0 || temperatureProstorija[prost][2] > 35.0)){
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "../ikone/oprez_crveno.svg");
                 }
                 else if (greske[prost] === false){
                     icon.setAttributeNS(null, "visibility", "hidden");
                 }
             }
-            else if (i === 1){
-                //console.log(otvoreniProzori[prost]);
+            //ikona za prozor
+            else if (i === 0){
                 if (otvoreniProzori[prost] === "1")
-                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/prozor_otvoren.svg");
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "../ikone/prozor_otvoren.svg");
                 else
-                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "ikone/prozor_zatvoren.svg");
+                    icon.setAttributeNS("http://www.w3.org/1999/xlink", "href", "../ikone/prozor_zatvoren.svg");
             }
             prostorija.append(icon);
         }
@@ -110,7 +110,7 @@ $(document).ready(function() {
             grafIframe.css.width = 200;*/
             grafIframe.addClass("graf-on");
             grafIframe.removeClass("graf-off");
-            grafIframe.attr("src", "display/main-graph.php?prostorija=" + $(this).attr("id").substring(1));
+            grafIframe.attr("src", "../../display/main-graph.php?prostorija=" + $(this).attr("id").substring(1));
             $(this).siblings().children(0).css("stroke-width", "2px");
             $(this).children(0).css("stroke-width", "6px");
         });

@@ -1,48 +1,7 @@
 <html lang="en">
 
 <?php
-include "config.php";
-$sql_query = "SELECT ID_CVOR, NAZIV FROM PROSTORIJA";
-$result = mysqli_query($con, $sql_query);
-$aktivne_prostorije = array();
-$nazivi_prostorija = array();
-for ($i = 0; $row = mysqli_fetch_array($result); $i++){
-    $nazivi_prostorija[$i] = $row["NAZIV"];
-    $aktivne_prostorije[$i] = $row;
-}
-
-$temperatura_prostorija = array();
-$otvoreni_prozori = array();
-$greske = array();
-for ($i = 0; $i < count($aktivne_prostorije); $i++){
-    $sql_query = "SELECT ID FROM TEMP_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
-    $result = mysqli_query($con, $sql_query);
-    $temperatura_prost = array();
-    for ($j = 0; $j < 3; $j++) {
-        $id_senzora = mysqli_fetch_array($result)[0];
-
-        $temp_query = "SELECT VRIJEDNOST FROM TEMP WHERE ID_SENZOR=" . $id_senzora . " ORDER BY VRIJEME DESC LIMIT 1";
-        $temp_result = mysqli_query($con, $temp_query);
-        $vrijednost = mysqli_fetch_array($temp_result)["VRIJEDNOST"];
-        $temperatura_prost[$j] = $vrijednost;
-    }
-
-    $temperatura_prostorija[$nazivi_prostorija[$i]] = $temperatura_prost;
-
-    $sql_query = "SELECT ID FROM STATUSOBJEKT_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
-    $result = mysqli_query($con, $sql_query);
-    $id_senzora = mysqli_fetch_array($result)[0];
-    $prozor_query = "SELECT VRIJEDNOST FROM STATUSOBJEKT WHERE ID_SENZOR=" . $id_senzora . " ORDER BY VRIJEME DESC LIMIT 1";
-    $otvoreni = mysqli_fetch_array(mysqli_query($con, $prozor_query))['VRIJEDNOST'];
-    $otvoreni_prozori[$nazivi_prostorija[$i]] = $otvoreni;
-
-    $senzor_query = "SELECT ID FROM STATUSOBJEKT_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'];
-    $senzor_id = mysqli_fetch_array(mysqli_query($con, $sql_query))['ID'];
-    //kada je u zadnjih 8h postojalo vrijeme kada je tempratura nekok senzora bila više od 35 stupneva, a prozor otvoren
-    $greska_query = "SELECT * FROM TEMP WHERE VRIJEDNOST >= 35 AND VRIJEME IN (SELECT VRIJEME FROM STATUSOBJEKT WHERE VRIJEDNOST=1 AND ID_SENZOR=" . $senzor_id . " AND VRIJEME >= NOW() - INTERVAL 8 HOUR)";
-    $result = mysqli_query($con, $greska_query);
-    $greske[$nazivi_prostorija[$i]] = (mysqli_fetch_array($result) != null);
-}
+include "../tlocrt.php";
 ?>
 
 <head>
@@ -50,11 +9,11 @@ for ($i = 0; $i < count($aktivne_prostorije); $i++){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tlocrt TSČ-a</title>
-    <link rel="stylesheet" href="css/tlocrt.css">
+    <link rel="stylesheet" href="tlocrt_pc.css">
 
 </head>
 <body>
-    <iframe id="graf" class="graf graf-off" src="display/main-graph.php"></iframe>
+    <iframe id="graf" class="graf graf-off" src="/mikroklima/display/main-graph.php"></iframe>
     <div class="flex">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2227.22 859.74">
             <g id="back"><polygon points="1 249.87 1 783.61 260.83 783.61 260.83 630.22 1029.35 630.22 1029.35 597.35 2226.22 597.35 2226.22 536.3 1029.35 536.3 1029.35 15.09 941.7 15.09 941.7 93.35 747.61 93.35 747.61 249.87 1 249.87" style="fill:#e6e6e6;stroke:#150000;stroke-miterlimit:10;stroke-width:2px"/></g>
@@ -83,12 +42,12 @@ for ($i = 0; $i < count($aktivne_prostorije); $i++){
 
 </body>
 
-<script type="text/javascript" src="jquery/jquery.js"></script>
+<script type="text/javascript" src="/mikroklima/jquery/jquery.js"></script>
 <script>
     var naziviAktivnihProstorija = <?php echo json_encode($nazivi_prostorija)?>;
     var temperatureProstorija = <?php echo json_encode($temperatura_prostorija)?>;
     var otvoreniProzori = <?php echo json_encode($otvoreni_prozori)?>;
     var greske = <?php echo json_encode($greske)?>;
 </script>
-<script type="text/javascript" src="tlocrt.js"></script>
+<script type="text/javascript" src="tlocrt_pc.js"></script>
 </html>
