@@ -151,22 +151,22 @@ void get_metadata(){
 
 void mjeri_temperaturu(){
   digitalWrite(B20_POWER, HIGH);
-  delay(100);
+  delay(1000);
   sensors.begin(); //inicijalizacija senzora u svakom krugu očitanja (omogućuje hot-swap)
-  delay(100);
+  delay(1000);
   broj_senzora = sensors.getDeviceCount(); //spremanje broja senzora
   sensors.requestTemperatures(); //očitavanje temperatura pomoću biblioteke
-  delay(10);
+  delay(100);
   zaSlanjeT += "\"temp\" : {\""; //početak json dijela s temperaturnim senzorima
   for(int sen = 0; sen < broj_senzora; sen++){
-    if(sensors.getTempCByIndex(sen) == -127) 
+    if(sensors.getTempCByIndex(sen) == -127)
       continue;
     sensors.getAddress(Thermometer, sen);
     zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
     zaSlanjeT += "\" : \"";
     zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
     if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
-    delay(50); //reading cooldown, u fazi testiranja/traženja problema spajanja očitanja
+    delay(500); //reading cooldown, u fazi testiranja/traženja problema spajanja očitanja
   }
   zaSlanjeT += "\"}";
   digitalWrite(B20_POWER, LOW);
