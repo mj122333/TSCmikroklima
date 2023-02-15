@@ -67,12 +67,10 @@ void loop() {
   if ((millis() - lastTime) > timerDelay) {
     mjeri_temperaturu(); //funkcija koja ažurira temperature
     get_metadata(); //WiFi status i baterija
-    hallRefresh(); //svaku minutu
+    hallRefresh(); //očitavanje stanja hall senzora
     pushData(); //funkcija koja šalje vrijednosti Gotalu i Biškupu
     lastTime = millis();
   }
-
-  //hallRefresh(); //"interrupt" funkcija statusObjekt-a (šalje podatke kod promjene, ne čeka timerDelay)
 }
 
 void hallRefresh(){ //void funkcija očitanja statusaObjekta
@@ -87,12 +85,14 @@ void hallRefresh(){ //void funkcija očitanja statusaObjekta
     delay(20);
     if (statusObjekt[i] != digitalRead(17+i)) //ako dva slijedna ocitanja daju razlicite vrijednosti -> preskoci
         continue;
-   
+   /*
     //ovaj dio moramo prodiskutirati
     if(zadnjeStanjeHall[i] != statusObjekt[i]){//
       zadnjeStanjeHall[i] = statusObjekt[i]; //ako je stanje različito prijašnjem, zapisuje se u listu
       lastTime = millis() + timerDelay; //Slanje ažuriranih podataka, odmah (ukoliko je doslo do promjene barem jednog senzora)
-    }
+    } 
+    //ovaj dio se koristio kod instantnog ažuriranja podataka (čim se promjenilo stanje prozora) 
+    */
     zaSlanjeH += "\"" + String(17+i) + "\" : \"" + statusObjekt[i] + "\""; //spremanje stanja u zaSlanjeH string (u json formatu)
     if(i != 2) zaSlanjeH += ",";
   }
@@ -132,7 +132,7 @@ void pushData(){
       while(WiFi.status() != WL_CONNECTED) { //ako esp32 nije spojen na WiFi u trenutku slanja poruke (ponovno spajanje)
         Serial.println("LostConnection, SPAJANJE!");
         WiFi.begin(ssid, password);
-        delay(10000);
+        delay(15000); //esp32 se pokušava spojiti svakih 15 sekundi
         //yield();
       }
       pushData(); //slanje podataka odmah nakon ponovnog spajanja
@@ -150,23 +150,26 @@ void get_metadata(){
 }
 
 void mjeri_temperaturu(){
+  digitalWrite(B20_POWER, HIGH);
+  delay(1000);
   sensors.begin(); //inicijalizacija senzora u svakom krugu očitanja (omogućuje hot-swap)
-  delay(10);
+  delay(1000);
   broj_senzora = sensors.getDeviceCount(); //spremanje broja senzora
   sensors.requestTemperatures(); //očitavanje temperatura pomoću biblioteke
-  delay(10);
+  delay(100);
   zaSlanjeT += "\"temp\" : {\""; //početak json dijela s temperaturnim senzorima
   for(int sen = 0; sen < broj_senzora; sen++){
-    if(sensors.getTempCByIndex(sen) == -127) 
+    if(sensors.getTempCByIndex(sen) == -127)
       continue;
     sensors.getAddress(Thermometer, sen);
     zaSlanjeT += printAddress(Thermometer); //očitavanje adrese
     zaSlanjeT += "\" : \"";
     zaSlanjeT += sensors.getTempCByIndex(sen); //očitavanje temperature
     if(sen != broj_senzora-1) zaSlanjeT += "\",\"";
-    delay(50);
+    delay(500); //reading cooldown, u fazi testiranja/traženja problema spajanja očitanja
   }
   zaSlanjeT += "\"}";
+  digitalWrite(B20_POWER, LOW);
 }
 
 String printAddress(DeviceAddress deviceAddress) //funkcija za adresu temperaturnih senzora
