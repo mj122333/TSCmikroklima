@@ -16,3 +16,4 @@ $con->set_charset('utf8');
 if (!$con) {
   die("Connection failed: " . mysqli_connect_error());
 }
+define('ADMINPASSWORD', 'LOZINKA_ZA_UI');

@@ -383,7 +383,7 @@ input[type="submit"]:hover{
 }
 
 .TEMP_SENZOR .column1 {
-	width: 20%;
+	width: 20%;	
 }
 
 .TEMP_SENZOR .column2 {
@@ -391,11 +391,14 @@ input[type="submit"]:hover{
 }
 
 .TEMP_SENZOR .column3 {
-	width: 40%;
+	width: 30%;
 }
 
 .TEMP_SENZOR .column4 {
 	width: 20%;
+}
+.TEMP_SENZOR .column5 {
+	width: 10%;
 }
 
 

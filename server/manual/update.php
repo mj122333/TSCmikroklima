@@ -1,18 +1,18 @@
 <?php
 include "../config.php";
-if(!isset($_GET["password"])){
-  echo "potrebna je lozinka";
-  exit();
+if (!isset($_GET["password"])) {
+    echo "potrebna je lozinka";
+    exit();
 }
-if (ADMINPASSWORD != $_GET["password"]){
-  echo "Kriva lozinka";
-  exit();
+if (ADMINPASSWORD != $_GET["password"]) {
+    echo "Kriva lozinka";
+    exit();
 }
 
 
 
 if (isset($_POST["CVOR"])) {
-    echo "<h2>CVOR TEST</h2>";
+    echo "<h2>CVOR</h2>";
     $sql_query = "SELECT * FROM CVOR";
 
     $result = mysqli_query($con, $sql_query);
@@ -41,7 +41,7 @@ if (isset($_POST["CVOR"])) {
 }
 
 if (isset($_POST["TEMP_SENZOR"])) {
-    echo "<h2>TEMP_SENZOR TEST</h2>";
+    echo "<h2>TEMP_SENZOR</h2>";
     $sql_query = "SELECT * FROM TEMP_SENZOR ";
     $result = mysqli_query($con, $sql_query);
     $index = 0;
@@ -74,7 +74,7 @@ if (isset($_POST["TEMP_SENZOR"])) {
 
 
 if (isset($_POST["STATUSOBJEKT_SENZOR"])) {
-    echo "<h2>STATUSOBJEKT_SENZOR TEST</h2>";
+    echo "<h2>STATUSOBJEKT_SENZOR</h2>";
     $sql_query = "SELECT * FROM STATUSOBJEKT_SENZOR ";
     $result = mysqli_query($con, $sql_query);
     $index = 0;
@@ -105,7 +105,7 @@ if (isset($_POST["STATUSOBJEKT_SENZOR"])) {
 
 
 if (isset($_POST["PROSTORIJA"])) {
-    echo "<h2>PROSTORIJA TEST</h2>";
+    echo "<h2>PROSTORIJA</h2>";
     $sql_query = "SELECT * FROM PROSTORIJA ";
     $result = mysqli_query($con, $sql_query);
 
