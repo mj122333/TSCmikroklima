@@ -90,4 +90,15 @@ if(isset($data["statusObjekt"])){
 }
 
 
+if(isset($data["metadata"])){
+    $objekt = $data["metadata"];
+    $wifi_rssi = $objekt["wifi_rssi"];
+    $baterija = $objekt["baterija"];
+    
+    $sql_query = "insert into METADATA (id_cvor, vrijeme, napon, rssi) values ( ".$cvor_id.", now(),  ".$baterija.", ".$wifi_rssi.")";
+    mysqli_query($con, $sql_query);
+    }
+}
+
+
 ?>
