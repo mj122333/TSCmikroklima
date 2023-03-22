@@ -112,7 +112,12 @@ $prozorData= rtrim(str_replace("\n", "",$dataset), ",")."]";
     let prozorData = <?php echo $prozorData;?>;
 </script>
 <script src="main-graph.js"></script>
-
+<p style="position:fixed;"><?php
+    $sql_query = "SELECT * FROM METADATA WHERE id_cvor=".$data["ID_CVOR"]." ORDER BY id DESC LIMIT 1";
+$result = mysqli_query($con, $sql_query);
+    $metadata = mysqli_fetch_array($result);
+    echo $metadata["baterija"];
+    ?><p>
 
 <div style="margin: 0 2.5vw">
   <canvas id="myChart"></canvas>
