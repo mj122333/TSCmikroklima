@@ -97,7 +97,6 @@ if(isset($data["metadata"])){
     
     $sql_query = "insert into METADATA (id_cvor, vrijeme, napon, rssi) values ( ".$cvor_id.", now(),  ".$baterija.", ".$wifi_rssi.")";
     mysqli_query($con, $sql_query);
-    }
 }
 
 
