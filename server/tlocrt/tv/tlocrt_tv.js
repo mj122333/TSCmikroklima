@@ -1,4 +1,4 @@
-$(document).ready(function() {
+function generirajSVG(){
     naziviAktivnihProstorija.forEach(function (prost){
         //postavljanje boje aktivnih prostorija
         let prostorija = document.getElementById("_" + prost);
@@ -11,10 +11,10 @@ $(document).ready(function() {
         let y = parseFloat(prostorijaRect.getAttributeNS(null, "y"));
         const RECT_OFFSET_X = 10;
         const RECT_OFFSET_Y = 10;
-        const RECT_WIDTH = 80;
-        const RECT_HEIGHT = 40;
+        const RECT_WIDTH = 120;
+        const RECT_HEIGHT = 70;
 
-        for (var i = 0; i < 3; i++){
+        for (let i = 0; i < 3; i++){
             let tempRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             let rectX = (x + RECT_OFFSET_X);
             let rectY = (y + RECT_OFFSET_Y + i * (RECT_OFFSET_Y + RECT_HEIGHT));
@@ -22,12 +22,15 @@ $(document).ready(function() {
             tempRect.setAttributeNS(null, "y", "" + rectY);
             tempRect.setAttributeNS(null, "width", "" + RECT_WIDTH);
             tempRect.setAttributeNS(null, "height", "" + RECT_HEIGHT);
+            tempRect.setAttributeNS(null, "rx", "20");
+            tempRect.setAttributeNS(null, "stroke", "white");
+            tempRect.setAttributeNS(null, "stroke-width", "5");
             if (i === 0)
-                tempRect.setAttributeNS(null, "fill", "#3c3");
+                tempRect.setAttributeNS(null, "fill", "#A4CC2E");
             else if (i === 1)
-                tempRect.setAttributeNS(null, "fill", "#f33");
+                tempRect.setAttributeNS(null, "fill", "#CC311B");
             else
-                tempRect.setAttributeNS(null, "fill", "#33f");
+                tempRect.setAttributeNS(null, "fill", "#4379CC");
             prostorija.appendChild(tempRect);
 
             let tempText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -50,7 +53,7 @@ $(document).ready(function() {
         const ICON_WIDTH = 60;
         const ICON_HEIGHT = 60;
 
-        for (i = 0; i < 2; i++){
+        for (let i = 0; i < 2; i++){
             let icon = document.createElementNS('http://www.w3.org/2000/svg', 'image');
             let rectX = (x - ICON_OFFSET_X - ICON_WIDTH);
             let rectY = (y + ICON_OFFSET_Y + i * (ICON_OFFSET_Y + ICON_HEIGHT));
@@ -100,4 +103,8 @@ $(document).ready(function() {
 
         rect.parentElement.appendChild(text);
     });
+}
+
+$(document).ready(function() {
+    generirajSVG();
 });

@@ -9,13 +9,12 @@
     height: 100%;
 }
 
-
 .ucionice-text{
     font: italic 30px sans-serif;
     fill: black;
 }
 
 .temp-text{
-    font: bold 20px sans-serif;
+    font: bold 30px sans-serif;
     fill: white;
 }

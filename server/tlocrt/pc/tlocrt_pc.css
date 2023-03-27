@@ -23,10 +23,11 @@
 
 .graf {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 50%;
-    height: 50%;
+    bottom: 0rem;
+    right: 0rem;
+    width: 55%;
+    height: 55%;
+    border: 0;
 }
 
 .graf-off {
