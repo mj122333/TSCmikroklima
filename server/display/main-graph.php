@@ -17,7 +17,7 @@ if (isset($_GET["start"]))
 if (isset($_GET["sata"])) {
     $duration_hours = $_GET['sata'];
     $start_date = date('Y-m-d H:i:s', strtotime($start_date . "-$duration_hours hours"));
-} else if (!isset($_GET["kraj"])) 
+} else if (!isset($_GET["kraj"]))
     $start_date = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . "-48 hours"));
 
 if (isset($_GET["kraj"])) {
@@ -185,7 +185,7 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
 
 
 
-    
+
     <?php
     if ($max_points > 0):
         echo "
@@ -199,6 +199,9 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
     ?>
 
     const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
+
+
 
 
     const ctx = document.getElementById('myChart').getContext('2d');
@@ -276,14 +279,15 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                 x: {
                     type: 'time',
                     time: {
-                        unit: 'minute',
                         displayFormats: {
-                            minute: 'HH:mm'
+                            minute: "MM/d HH:mm",
+                            hour: "MM/d HH:mm",
+                            day: "MM/d HH:mm"
+                        },
+                        title: {
+                            display: true,
+                            text: 'Vrijeme'
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Vrijeme'
                     }
                 },
                 y1: {
@@ -331,6 +335,11 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     },
                 },
             },
+            onAfterUpdate: function (chart) {
+                const xAxis = chart.scales.x;
+                const range = xAxis.max - xAxis.min;
+                updateTimeFormat(chart, range);
+            }
         }
     });
 </script>
