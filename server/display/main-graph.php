@@ -8,24 +8,37 @@ if (!isset($_GET["prostorija"])) {
     exit();
 }
 
-if (isset($_GET["sata"]))
-    $SATA = $_GET["sata"];
-else
-    $SATA = 48;
+$start_date = date('Y-m-d H:i:s');
+$end_date = date('Y-m-d H:i:s');
+if (isset($_GET["start"]))
+    if (strtotime($_GET["start"]) !== false)
+        $start_date = date('Y-m-d H:i:s', strtotime($_GET['start']));
 
+if (isset($_GET["sata"])) {
+    $duration_hours = $_GET['sata'];
+    $start_date = date('Y-m-d H:i:s', strtotime($start_date . "-$duration_hours hours"));
+} else if (!isset($_GET["kraj"])) 
+    $start_date = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . "-48 hours"));
+
+if (isset($_GET["kraj"])) {
+    $duration_hours = $_GET["kraj"];
+    $end_date = date('Y-m-d H:i:s', strtotime($_GET["kraj"]));
+}
+$max_points = -1;
+if (isset($_GET["max_points"])) {
+    $max_points = $_GET["max_points"];
+}
 
 
 function createDataChartJS($con, $table, $id_sensor)
 {
-    $sql_query = "SELECT ID_SENZOR, ROUND(VRIJEDNOST,1) AS VRIJEDNOST, VRIJEME FROM " . $table . " WHERE ID_SENZOR=" . $id_sensor . " and vrijeme>(CURDATE()-INTERVAL " . $GLOBALS["SATA"] . " HOUR) order by VRIJEME desc";
+    $sql_query = "SELECT ID_SENZOR, ROUND(VRIJEDNOST,1) AS VRIJEDNOST, VRIJEME FROM " . $table . " WHERE ID_SENZOR=" . $id_sensor . " and vrijeme BETWEEN '" . $GLOBALS["start_date"] . "' AND '" . $GLOBALS["end_date"] . "' order by VRIJEME desc";
     $result = mysqli_query($con, $sql_query);
     $dataset = "[";
 
     while ($row = mysqli_fetch_array($result)) {
 
         $vrijeme = strtotime($row["VRIJEME"]);
-        if (time() - $GLOBALS["SATA"] * 60 * 60 > $vrijeme)
-            continue;
         $dataset .= "{x:'" . $row["VRIJEME"] . "',y:" . (($staro_vrijeme < $vrijeme + 600 /*sekundi*/) ? $row["VRIJEDNOST"] : "NaN") . "},";
         $staro_vrijeme = strtotime($row["VRIJEME"]);
     }
@@ -104,15 +117,14 @@ $klimaData = createDataChartJS($con, "TEMP", $kilmaID);
 
 
 //Čitanje i spremanje podataka o stanju prozora
-$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=" . $prozorID . " and vrijeme>(CURDATE()-INTERVAL " . $SATA . " HOUR) order by VRIJEME desc";
+$sql_query = "SELECT * FROM STATUSOBJEKT WHERE ID_SENZOR=" . $prozorID . " and vrijeme BETWEEN '" . $GLOBALS["start_date"] . "' AND '" . $GLOBALS["end_date"] . "' order by VRIJEME desc";
+
 $result = mysqli_query($con, $sql_query);
 if ($debug)
     echo $sql_query;
 $dataset = "[";
 while ($row = mysqli_fetch_array($result)) {
-    $vrijeme = strtotime($row["VRIJEME"]);
-    if (time() - $GLOBALS["SATA"] * 60 * 60 > $vrijeme)
-        continue;
+
     $dataset .= "{x:'" . $row["VRIJEME"] . "',y:'" . (($row["VRIJEDNOST"] == 0) ? "ZATVOREN" : "OTVOREN") . "'},";
 }
 $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
@@ -124,13 +136,8 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
     src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-<script>
-    let sobnaData = <?php echo $sobnaData; ?>;
-    let radijatorData = <?php echo $radijatorData; ?>;
-    let klimaData = <?php echo $klimaData; ?>;
-    let prozorData = <?php echo $prozorData; ?>;
+
 </script>
-<script src="main-graph.js"></script>
 <p style="position:fixed;">
     <?php
     $sql_query = "SELECT * FROM METADATA WHERE id_cvor=" . $data["ID_CVOR"] . " ORDER BY id DESC LIMIT 1";
@@ -143,3 +150,187 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
 <div style="margin: 0 2.5vw">
     <canvas id="myChart"></canvas>
 </div>
+<script>
+    function downsampleTimeData(data, threshold) {
+        if (data.length <= threshold) {
+            return data;
+        }
+
+        const newData = [];
+        const blockSize = Math.ceil(data.length / threshold);
+
+        for (let i = 0; i < data.length; i += blockSize) {
+            const block = data.slice(i, i + blockSize);
+            const avgTime = new Date(
+                block.reduce((acc, point) => acc + point.x.getTime(), 0) / block.length
+            );
+            const avgY = block.reduce((acc, point) => acc + point.y, 0) / block.length;
+
+            newData.push({ x: avgTime, y: avgY });
+        }
+
+        return newData;
+    }
+
+
+    let sobnaData = <?php echo $sobnaData; ?>;
+    let radijatorData = <?php echo $radijatorData; ?>;
+    let klimaData = <?php echo $klimaData; ?>;
+    let prozorData = <?php echo $prozorData; ?>;
+
+    sobnaData = sobnaData.map(point => { return { x: new Date(point.x), y: point.y }; });
+    radijatorData = radijatorData.map(point => { return { x: new Date(point.x), y: point.y }; });
+    klimaData = klimaData.map(point => { return { x: new Date(point.x), y: point.y }; });
+    prozorData = prozorData.map(point => { return { x: new Date(point.x), y: point.y }; });
+
+
+
+    
+    <?php
+    if ($max_points > 0):
+        echo "
+        sobnaData = downsampleTimeData(sobnaData, $max_points);
+        radijatorData = downsampleTimeData(radijatorData, $max_points);
+        klimaData = downsampleTimeData(klimaData, $max_points);
+        prozorData = downsampleTimeData(prozorData, $max_points);
+        ";
+
+    endif;
+    ?>
+
+    const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const temperatureChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                {
+                    label: 'Radijator',
+                    data: radijatorData,
+                    borderColor: "#F00",
+                    backgroundColor: "#F00",
+                    pointStyle: false,
+                    segment: {
+                        borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+                        borderDash: ctx => skipped(ctx, [6, 6]),
+                    },
+                    spanGaps: true,
+                    cubicInterpolationMode: 'monotone',
+                    tension: 0,
+                    borderWidth: (window.innerWidth >= 640 ? 2 : .5)
+                },
+                {
+                    label: 'Sobna',
+                    data: sobnaData,
+                    borderColor: "#0F0",
+                    backgroundColor: "#0F0",
+                    pointStyle: false,
+                    segment: {
+                        borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+                        borderDash: ctx => skipped(ctx, [6, 6]),
+                    },
+                    spanGaps: true,
+                    cubicInterpolationMode: 'monotone',
+                    tension: 0.4,
+                    borderWidth: (window.innerWidth >= 640 ? 2 : .5)
+                },
+                {
+                    label: 'Klima',
+                    data: klimaData,
+                    borderColor: "#22F",
+                    backgroundColor: "#22F",
+                    pointStyle: false,
+                    segment: {
+                        borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+                        borderDash: ctx => skipped(ctx, [6, 6]),
+                    },
+                    spanGaps: true,
+                    cubicInterpolationMode: 'monotone',
+                    tension: 0.4,
+                    borderWidth: (window.innerWidth >= 640 ? 2 : .5)
+                },
+                {
+                    label: 'Prozor',
+                    data: prozorData,
+                    borderColor: "#00F",
+                    backgroundColor: "#00F",
+                    stepped: true,
+                    pointStyle: false,
+                    yAxisID: 'y2',
+                    segment: {
+                        borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
+                        borderDash: ctx => skipped(ctx, [6, 6]),
+                    },
+                    spanGaps: true,
+                    cubicInterpolationMode: 'monotone',
+                    tension: 0.4,
+                    borderWidth: (window.innerWidth >= 640 ? 2 : .5)
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'minute',
+                        displayFormats: {
+                            minute: 'HH:mm'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Vrijeme'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'left',
+                    stack: 'main',
+                    stackWeight: 4,
+                    border: {
+                        color: "red"
+                    }
+                },
+                y2: {
+                    type: 'category',
+                    labels: ['OTVOREN', 'ZATVOREN'],
+                    offset: true,
+                    position: 'left',
+                    stack: 'main',
+                    stackWeight: 1,
+                    border: {
+                        color: "blue"
+                    },
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Temperatura - otvoreni prozor',
+                },
+                legend: {
+                    display: (window.innerWidth >= 640 ? true : false)
+                },
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x',
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        pinch: {
+                            enabled: true,
+                        },
+                        mode: 'x',
+                    },
+                },
+            },
+        }
+    });
+</script>
