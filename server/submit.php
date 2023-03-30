@@ -1,16 +1,16 @@
 <?php
 include "config.php"; //sluzi za povezivanje s bazom podataka
-if ($_SERVER['REQUEST_METHOD'] !== 'POST'){
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo "Not a POST method\n";
     exit();
 }
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
-if($data == null) {
+if ($data == null) {
     echo "JSON data nije u redu!\n";
     exit();
 }
-if(!isset($data["MAC"])){
+if (!isset($data["MAC"])) {
     echo "Nedostaje MAC adresa\n";
     exit();
 }
@@ -18,87 +18,96 @@ if(!isset($data["MAC"])){
 $mac = str_replace("-", "", str_replace(":", "", $data["MAC"]));
 
 
-$sql_query = "select ID from CVOR where MAC = '".$mac."'";  //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
+$sql_query = "select ID from CVOR where MAC = '" . $mac . "'"; //#TODO eventualno promijeniti naziv atributa macAddress (pogledati u definiciji baze)
 
-$result = mysqli_query($con, $sql_query);   //$con postoji u config.php!
+$result = mysqli_query($con, $sql_query); //$con postoji u config.php!
 $row = mysqli_fetch_array($result);
-if($row ==null){
-    $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('".$mac."', 1)"; 
+if ($row == null) {
+    $sql_query = "insert into CVOR (MAC, AKTIVNO) values ('" . $mac . "', 1)";
     mysqli_query($con, $sql_query);
-    echo "Dodana nova MAC adresa: ".$mac."\n";
-    $sql_query = "select ID from CVOR where MAC = '".$mac."'";
+    echo "Dodana nova MAC adresa: " . $mac . "\n";
+    $sql_query = "select ID from CVOR where MAC = '" . $mac . "'";
     $result = mysqli_query($con, $sql_query);
 }
 
-echo "MAC adresa: ".$data["MAC"]."\n";
+echo "MAC adresa: " . $data["MAC"] . "\n";
 
 $cvor_id = $row['ID']; //dohvacamo vrijednost ID-a
-echo "Cvor id: ".$cvor_id."\n";
+echo "Cvor id: " . $cvor_id . "\n";
 
 
-if(isset($data["temp"])){
+if (isset($data["temp"])) {
     $temp = $data['temp'];
-    
-    foreach($temp as $neobradjenaAdresa => $vrijednost) {
 
-        $hexAdresa = str_replace(",", "", str_replace(" ", "", str_replace("0x", "", $neobradjenaAdresa)));//Pretvaranje dobivene adrese u 16char hex zapis
+    foreach ($temp as $neobradjenaAdresa => $vrijednost) {
+        if ($vrijednost < -100)
+            continue;
+
+
+        $hexAdresa = str_replace(",", "", str_replace(" ", "", str_replace("0x", "", $neobradjenaAdresa))); //Pretvaranje dobivene adrese u 16char hex zapis
         $adresa = $hexAdresa;
         //for($i=0;$i<strlen($hexAdresa);$i+=2) $adresa .= chr(hexdec(substr($hexAdresa,$i,2)));//Pretvaranje 16 char hex zapis u 8 char ascii zapis
 
 
-        $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'";
+        $sql_query = "select id from TEMP_SENZOR where ID_CVOR =" . $cvor_id . " and ADRESA = '" . $adresa . "'";
         $result = mysqli_query($con, $sql_query);
-        $row=mysqli_fetch_array($result);
-        $senzor_id=-1;
-        if ($row==null) //ako senzor nije u TEMP_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
+        $row = mysqli_fetch_array($result);
+        $senzor_id = -1;
+        if ($row == null) //ako senzor nije u TEMP_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
         {
-            $sql_query = "insert into TEMP_SENZOR (ADRESA, ID_CVOR, TIP) values ('".$adresa."', ".$cvor_id.", 100)";
+            $sql_query = "insert into TEMP_SENZOR (ADRESA, ID_CVOR, TIP) values ('" . $adresa . "', " . $cvor_id . ", 100)";
             mysqli_query($con, $sql_query);
-            echo "Dodan je novi senzor temperature u tablicu TEMP_SENZOR: ('".$adresa."', ".$cvor_id.", 100)\n";
-            $sql_query = "select id from TEMP_SENZOR where ID_CVOR =".$cvor_id." and ADRESA = '".$adresa."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            echo "Dodan je novi senzor temperature u tablicu TEMP_SENZOR: ('" . $adresa . "', " . $cvor_id . ", 100)\n";
+            $sql_query = "select id from TEMP_SENZOR where ID_CVOR =" . $cvor_id . " and ADRESA = '" . $adresa . "'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
-            $row=mysqli_fetch_array($result);
+            $row = mysqli_fetch_array($result);
         }
-        $senzor_id=$row['id'];
-        $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
+        $senzor_id = $row['id'];
+        $sql_query = "select * from TEMP where ID_SENZOR=" . $senzor_id . " ORDER BY id DESC LIMIT 1"; //Provjeravamo prošli zapis i koregiramo novi
         $result = mysqli_query($con, $sql_query);
-        echo "Dodana novi zapis u TEMP tablicu: senzor adresa u ASCII: ".$adresa.", senzor adresa u HEX: ".$hexAdresa.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
+        $row = mysqli_fetch_array($result);
+        if (($row["VRIJEDNOST"] + 1.5 < $vrijednost || $row["VRIJEDNOST"] - 1.5 > $vrijednost) && strtotime($row["VRIJEME"]) + 6000 > time())
+            continue;
+
+        $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (" . $senzor_id . ", " . $vrijednost . ", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
+        $result = mysqli_query($con, $sql_query);
+        echo "Dodana novi zapis u TEMP tablicu: senzor adresa u ASCII: " . $adresa . ", senzor adresa u HEX: " . $hexAdresa . ", ID_SENZOR: " . $senzor_id . ", VRIJEDNOST: " . $vrijednost . "\n";
     }
 }
 
-if(isset($data["statusObjekt"])){
+if (isset($data["statusObjekt"])) {
     $objekt = $data["statusObjekt"];
-    foreach($objekt as $pin => $vrijednost) {
-        $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'";
+    foreach ($objekt as $pin => $vrijednost) {
+        $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =" . $cvor_id . " and PIN = '" . $pin . "'";
         $result = mysqli_query($con, $sql_query);
-        $row=mysqli_fetch_array($result);
-        $senzor_id=-1;
-        if ($row==null) //ako senzor nije u STATUSOBJEKT_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
+        $row = mysqli_fetch_array($result);
+        $senzor_id = -1;
+        if ($row == null) //ako senzor nije u STATUSOBJEKT_SENZOR tablici stvaramo novi zapis u tablici za taj senzor i uzimamo njegov novo stvoreni ID i spremamo ga i $senzor_id
         {
-            $sql_query = "insert into STATUSOBJEKT_SENZOR (PIN, ID_CVOR, TIP) values ('".$pin."', ".$cvor_id.", 100)";
+            $sql_query = "insert into STATUSOBJEKT_SENZOR (PIN, ID_CVOR, TIP) values ('" . $pin . "', " . $cvor_id . ", 100)";
             mysqli_query($con, $sql_query);
-            echo "Dodan je novi senzor za status objekta u tablicu STATUSOBJEKT_SENZOR: ('".$pin."', ".$cvor_id.", 100)\n";
-            $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =".$cvor_id." and PIN = '".$pin."'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
+            echo "Dodan je novi senzor za status objekta u tablicu STATUSOBJEKT_SENZOR: ('" . $pin . "', " . $cvor_id . ", 100)\n";
+            $sql_query = "select id from STATUSOBJEKT_SENZOR where ID_CVOR =" . $cvor_id . " and PIN = '" . $pin . "'"; // #TODO optimizirati da se ID dohvati prilikom unosa?
             $result = mysqli_query($con, $sql_query);
-            $row=mysqli_fetch_array($result);
+            $row = mysqli_fetch_array($result);
         }
-        $senzor_id=$row['id'];
-        $sql_query = "insert into STATUSOBJEKT (ID_SENZOR, VRIJEDNOST, VRIJEME) values (".$senzor_id.", ".$vrijednost.", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
+        $senzor_id = $row['id'];
+        $sql_query = "insert into STATUSOBJEKT (ID_SENZOR, VRIJEDNOST, VRIJEME) values (" . $senzor_id . ", " . $vrijednost . ", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
         $result = mysqli_query($con, $sql_query);
-        echo "Dodana novi zapis u STATUSOBJEKT tablicu: adresa senzora: ".$pin.", ID_SENZOR: ". $senzor_id .", VRIJEDNOST: ".$vrijednost."\n";
+        echo "Dodana novi zapis u STATUSOBJEKT tablicu: adresa senzora: " . $pin . ", ID_SENZOR: " . $senzor_id . ", VRIJEDNOST: " . $vrijednost . "\n";
     }
 }
 
 
-if(isset($data["metadata"])){
+if (isset($data["metadata"])) {
     $objekt = $data["metadata"];
     $wifi_rssi = $objekt["wifi_rssi"];
     $baterija = $objekt["baterija"];
-    
-    $sql_query = "insert into METADATA (id_cvor, vrijeme, napon, rssi) values ( ".$cvor_id.", now(),  ".$baterija.", ".$wifi_rssi.")";
+
+    $sql_query = "insert into METADATA (id_cvor, vrijeme, napon, rssi) values ( " . $cvor_id . ", now(),  " . $baterija . ", " . $wifi_rssi . ")";
     mysqli_query($con, $sql_query);
-    }
 }
+
 
 
 ?>
