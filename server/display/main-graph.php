@@ -116,8 +116,8 @@ $prozorData= rtrim(str_replace("\n", "",$dataset), ",")."]";
     $sql_query = "SELECT * FROM METADATA WHERE id_cvor=".$data["ID_CVOR"]." ORDER BY id DESC LIMIT 1";
 $result = mysqli_query($con, $sql_query);
     $metadata = mysqli_fetch_array($result);
-    echo $metadata["baterija"];
-    ?><p>
+    print_r ($metadata["napon"]/1000);
+    ?>V</p>
 
 <div style="margin: 0 2.5vw">
   <canvas id="myChart"></canvas>
