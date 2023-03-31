@@ -5,8 +5,8 @@
 #include <OneWire.h>
 #include <WiFi.h>
 
-const char* ssid = "eSkole";
-const char* password = "eSkole#112233";
+const char* ssid = "B-WiFi";
+const char* password = "kometprelog";
 
 String serverName = "https://jambrosic.xyz/mikroklima/submit.php";
 
@@ -128,9 +128,11 @@ void pushData() {
         // String jsonData =  "{\"MAC\" : \"" + macAdresa + "\",\"key\" :
         // \"esp32\",\"temp\" : {\"0xtest1\" : \"15\",\"0xtest2\" : \"20\" ,
         // \"0xtest3\" : \"25\"}}";
+
         String jsonData = "{\"MAC\" : \"" + macAdresa + "\",\"key\" : \"" +
                           key + "\"," + zaSlanjeT + zaSlanjeH + zaSlanjeM + "}";
-        Serial.println(jsonData);
+
+        Serial.println(jsonData); // debug u konzoli
         zaSlanjeT = "";  // reset stringa za temperature
         zaSlanjeH = "";  // reset stringa za statusObjekta (hall)
         zaSlanjeM = "";  // reset stringa za metadata
