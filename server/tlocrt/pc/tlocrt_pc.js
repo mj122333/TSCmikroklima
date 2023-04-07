@@ -5,7 +5,7 @@ function generirajSVG(){
         if (prostorija === null) return;
         let prostorijaRect = prostorija.firstChild;
         prostorijaRect.style.fill = "#8ee09c";
-
+        
         //prikazivanje temperature na tlocrtu
         let x = parseFloat(prostorijaRect.getAttributeNS(null, "x"));
         let y = parseFloat(prostorijaRect.getAttributeNS(null, "y"));
@@ -32,7 +32,7 @@ function generirajSVG(){
             else
                 tempRect.setAttributeNS(null, "fill", "#4379CC");
             prostorija.appendChild(tempRect);
-
+            
             let tempText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             tempText.setAttributeNS(null, "x", ""+(rectX + 0.5 * RECT_WIDTH));
             tempText.setAttributeNS(null, "y", ""+(rectY + 0.5 * RECT_HEIGHT));
