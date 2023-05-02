@@ -12,6 +12,8 @@ String serverName = "https://jambrosic.xyz/mikroklima/submit.php";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 60000;
+#define uS_TO_S_FACTOR 1000000
+#define TIME_TO_SLEEP  5
 String key = "esp32";  // super tajni key
 String macAdresa = "";
 String zaSlanjeT = "";
@@ -66,6 +68,7 @@ void setup() {
     pinMode(BATT, INPUT);
     pinMode(B20_POWER, OUTPUT);
     digitalWrite(B20_POWER, HIGH);  // no deep sleep
+    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
 }
 
 void loop() {
@@ -75,13 +78,16 @@ void loop() {
      * interval slanja podataka neovisan je o promjeni statusaObjekta (šalje
      * podatke na timerDelay)
      */
-    if ((millis() - lastTime) > timerDelay) {
+    //if ((millis() - lastTime) > timerDelay) { 
         mjeri_temperaturu();  // funkcija koja ažurira temperature
         get_metadata();       // WiFi status i baterija
         hallRefresh();        // očitavanje stanja hall senzora
         pushData();  // funkcija koja šalje vrijednosti Gotalu i Biškupu
-        lastTime = millis();
-    }
+      //  lastTime = millis();
+    //}
+    WiFi.disconnect();
+    Serial.flush(); 
+    esp_deep_sleep_start();  
 }
 
 void hallRefresh() {                // void funkcija očitanja statusaObjekta
