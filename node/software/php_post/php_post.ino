@@ -38,6 +38,8 @@ DeviceAddress Thermometer;
 
 void setup() {
     Serial.begin(115200);
+    pinMode(21, OUTPUT);
+    digitalWrite(21, HIGH); // status led
     pinMode(RED_LED, OUTPUT);
     pinMode(GREEN_LED, OUTPUT);
     pinMode(BLUE_LED, OUTPUT);
@@ -58,7 +60,7 @@ void setup() {
     Serial.println(macAdresa);
     Serial.println(WiFi.RSSI());
     pinMode(HALL_POWER, OUTPUT);
-    pinMode(HALL_READ1, INPUT_PULLUP);
+    pinMode(HALL_READ1, INPUT);
     //pinMode(HALL_READ2, INPUT_PULLUP);
     //pinMode(HALL_READ3, INPUT_PULLUP);
     pinMode(BATT, INPUT);
