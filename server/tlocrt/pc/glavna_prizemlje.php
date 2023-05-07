@@ -48,6 +48,7 @@ include "../tlocrt.php";
     var temperatureProstorija = <?php echo json_encode($temperatura_prostorija)?>;
     var otvoreniProzori = <?php echo json_encode($otvoreni_prozori)?>;
     var greske = <?php echo json_encode($greske)?>;
+    var baterije = <?php echo json_encode($baterije)?>;
 </script>
 <script type="text/javascript" src="tlocrt_pc.js"></script>
 </html>

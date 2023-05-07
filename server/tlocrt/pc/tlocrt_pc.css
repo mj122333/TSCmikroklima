@@ -19,6 +19,7 @@
 .temp-text{
     font: bold 20px sans-serif;
     fill: white;
+    pointer-events: none;
 }
 
 .graf {
