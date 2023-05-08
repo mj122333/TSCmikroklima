@@ -31,6 +31,12 @@
     border: 0;
 }
 
+@media only screen and (max-width: 1000px) {
+    .graf {
+        width: 100%
+    }
+}
+
 .graf-off {
     display: none;
 }
