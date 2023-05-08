@@ -16,13 +16,14 @@ function generirajSVG(){
         const RECT_WIDTH = 100;
         const RECT_HEIGHT = 50;
 
-        for (var i = 0; i < 3; i++){
+        for (let i = 0; i < 3; i++){
             if (temperatureProstorija[prost][i] == null) continue;
 
             let tempRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             let rectX = (x + RECT_OFFSET_X);
             let rectY = (y + RECT_OFFSET_Y + i * (RECT_OFFSET_Y + RECT_HEIGHT));
-            if (prost === "26") rectY += parseFloat(prostorijaRect.getAttributeNS(null, "height"));
+            if (prost === "26" || prost === "27" || prost === "28")
+                rectY += parseFloat(prostorijaRect.getAttributeNS(null, "height"));
 
             tempRect.setAttributeNS(null, "x", "" + rectX);
             tempRect.setAttributeNS(null, "y", "" + rectY);
