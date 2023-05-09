@@ -5,15 +5,15 @@
 #include <OneWire.h>
 #include <WiFi.h>
 
-const char* ssid = "B-WiFi";
-const char* password = "kometprelog";
+const char* ssid = "eSkole";
+const char* password = "eSkole#112233";
 
 String serverName = "https://jambrosic.xyz/mikroklima/submit.php";
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 60000;
 #define uS_TO_S_FACTOR 1000000
-#define TIME_TO_SLEEP  5
+#define TIME_TO_SLEEP  60
 String key = "esp32";  // super tajni key
 String macAdresa = "";
 String zaSlanjeT = "";
@@ -62,7 +62,7 @@ void setup() {
     Serial.println(macAdresa);
     Serial.println(WiFi.RSSI());
     pinMode(HALL_POWER, OUTPUT);
-    pinMode(HALL_READ1, INPUT);
+    pinMode(HALL_READ1, INPUT_PULLDOWN);
     //pinMode(HALL_READ2, INPUT_PULLUP);
     //pinMode(HALL_READ3, INPUT_PULLUP);
     pinMode(BATT, INPUT);
