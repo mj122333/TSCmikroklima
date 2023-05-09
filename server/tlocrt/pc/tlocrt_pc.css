@@ -19,6 +19,7 @@
 .temp-text{
     font: bold 20px sans-serif;
     fill: white;
+    pointer-events: none;
 }
 
 .graf {
@@ -28,6 +29,12 @@
     width: 55%;
     height: 55%;
     border: 0;
+}
+
+@media only screen and (max-width: 1000px) {
+    .graf {
+        width: 100%
+    }
 }
 
 .graf-off {

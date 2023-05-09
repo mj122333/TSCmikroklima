@@ -1,6 +1,6 @@
 <?php
 include "../../config.php";
-$sql_query = "SELECT ID_CVOR, NAZIV FROM PROSTORIJA;";
+$sql_query = "SELECT ID_CVOR, NAZIV FROM PROSTORIJA";
 $result = mysqli_query($con, $sql_query);
 $aktivne_prostorije = array();
 $nazivi_prostorija = array();
@@ -12,9 +12,9 @@ for ($i = 0; $row = mysqli_fetch_array($result); $i++){
 $temperatura_prostorija = array();
 $otvoreni_prozori = array();
 $greske = array();
+$baterije = array();
 for ($i = 0; $i < count($aktivne_prostorije); $i++){
     $sql_query = "SELECT ID FROM TEMP_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY TIP";
-
     $result = mysqli_query($con, $sql_query);
     $temperatura_prost = array();
     for ($j = 0; $j < 3; $j++) {
@@ -37,14 +37,13 @@ for ($i = 0; $i < count($aktivne_prostorije); $i++){
 
     $senzor_query = "SELECT ID FROM STATUSOBJEKT_SENZOR WHERE ID_CVOR=" . $aktivne_prostorije[$i]['ID_CVOR'];
     $senzor_id = mysqli_fetch_array(mysqli_query($con, $sql_query))['ID'];
-    //kada je u zadnjih 8h postojalo vrijeme kada je tempratura nekok senzora bila više od 35 stupneva, a prozor otvoren
-    $greska_query = "SELECT * FROM TEMP WHERE
-        VRIJEDNOST >= 35 AND format(VRIJEME,'dd-MM-yyyy hh:mm') IN
-        (SELECT format(VRIJEME,'dd-MM-yyyy hh:mm') FROM STATUSOBJEKT
-            WHERE VRIJEDNOST=1 AND ID_SENZOR="
-            . $senzor_id . 
-            " AND VRIJEME >= NOW() - INTERVAL 8 HOUR)";
+    //kada je u zadnjih 8h postojalo vrijeme kada je tempratura nekok senzora bila vise od 35 stupneva, a prozor otvoren
+    $greska_query = "SELECT * FROM TEMP WHERE VRIJEDNOST >= 35 AND format(VRIJEME,'dd-MM-yyyy hh:mm') IN (SELECT format(VRIJEME,'dd-MM-yyyy hh:mm') FROM STATUSOBJEKT WHERE VRIJEDNOST=1 AND ID_SENZOR=" . $senzor_id . " AND VRIJEME >= NOW() - INTERVAL 8 HOUR)";
     $result = mysqli_query($con, $greska_query);
     $greske[$nazivi_prostorija[$i]] = (mysqli_fetch_array($result) != null);
+
+    $baterije_query = "SELECT napon FROM METADATA WHERE id_cvor=" . $aktivne_prostorije[$i]['ID_CVOR'] . " ORDER BY id DESC LIMIT 1";
+    $result = mysqli_query($con, $baterije_query);
+    $baterije[$nazivi_prostorija[$i]] = mysqli_fetch_array($result)["napon"];
 }
 ?>

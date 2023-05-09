@@ -27,7 +27,7 @@ include "../tlocrt.php";
             <g id="_23" data-name="23">
                 <rect x="393.8696" y="1" width="95.4783" height="190.9565" style="fill: #bfbfbf;stroke: #150000;stroke-miterlimit: 10;stroke-width: 2px"/>
             </g>
-            <g id="_27" data-name="27">
+            <g id="_24" data-name="24">
                 <rect x="489.3478" y="1" width="76.6957" height="190.9565" style="fill: #bfbfbf;stroke: #150000;stroke-miterlimit: 10;stroke-width: 2px"/>
             </g>
             <g id="_25" data-name="25">
@@ -36,10 +36,10 @@ include "../tlocrt.php";
             <g id="_26" data-name="26">
                 <rect x="692.8261" y="1" width="76.6957" height="190.9565" style="fill: #bfbfbf;stroke: #150000;stroke-miterlimit: 10;stroke-width: 2px"/>
             </g>
-            <g id="__1" data-name="_?1">
+            <g id="_27" data-name="_27">
                 <rect x="769.5217" y="1" width="71.2174" height="190.9565" style="fill: #bfbfbf;stroke: #150000;stroke-miterlimit: 10;stroke-width: 2px"/>
             </g>
-            <g id="__2" data-name="_?2">
+            <g id="_28" data-name="_28">
                 <rect x="840.7391" y="1" width="71.2174" height="190.9565" style="fill: #bfbfbf;stroke: #150000;stroke-miterlimit: 10;stroke-width: 2px"/>
             </g>
             <g id="_29" data-name="29">
