@@ -5,8 +5,8 @@
 #include <OneWire.h>
 #include <WiFi.h>
 
-const char* ssid = "eSkole";
-const char* password = "eSkole#112233";
+const char* ssid = "tsck4G";
+const char* password = "Radijator1";
 
 String serverName = "https://jambrosic.xyz/mikroklima/submit.php";
 
@@ -48,6 +48,9 @@ void setup() {
     WiFi.begin(ssid, password);
     delay(2000);
     Serial.println("Spajanje");
+    Serial.print("MAC: ");
+    macAdresa = WiFi.macAddress();
+    Serial.println(macAdresa);
     while (WiFi.status() != WL_CONNECTED) {
         WiFi.begin(ssid, password);
         spajanje(5000);
@@ -57,12 +60,9 @@ void setup() {
     Serial.println("");
     Serial.print("IP: ");
     Serial.println(WiFi.localIP());
-    Serial.print("MAC: ");
-    macAdresa = WiFi.macAddress();
-    Serial.println(macAdresa);
     Serial.println(WiFi.RSSI());
     pinMode(HALL_POWER, OUTPUT);
-    pinMode(HALL_READ1, INPUT_PULLDOWN);
+    pinMode(HALL_READ1, INPUT_PULLUP);
     //pinMode(HALL_READ2, INPUT_PULLUP);
     //pinMode(HALL_READ3, INPUT_PULLUP);
     pinMode(BATT, INPUT);
