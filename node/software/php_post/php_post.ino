@@ -3,10 +3,11 @@
 #include <DallasTemperature.h>
 #include <HTTPClient.h>
 #include <OneWire.h>
-#include <WiFi.h>
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 
-const char* ssid = "tsck4G";
-const char* password = "Radijator1";
+bool wm_nonblocking = false; // change to true to use non blocking
+WiFiManager wm;
+WiFiManagerParameter custom_field;
 
 String serverName = "https://jambrosic.xyz/mikroklima/submit.php";
 
@@ -45,17 +46,12 @@ void setup() {
     pinMode(RED_LED, OUTPUT);
     pinMode(GREEN_LED, OUTPUT);
     pinMode(BLUE_LED, OUTPUT);
-    WiFi.begin(ssid, password);
     delay(2000);
     Serial.println("Spajanje");
     Serial.print("MAC: ");
     macAdresa = WiFi.macAddress();
     Serial.println(macAdresa);
-    while (WiFi.status() != WL_CONNECTED) {
-        WiFi.begin(ssid, password);
-        spajanje(5000);
-        // yield();
-    }
+    spoji();
     spojeno();
     Serial.println("");
     Serial.print("IP: ");
@@ -86,6 +82,7 @@ void loop() {
       //  lastTime = millis();
     //}
     WiFi.disconnect();
+    off();
     Serial.flush(); 
     esp_deep_sleep_start();  
 }
@@ -158,15 +155,7 @@ void pushData() {
         }
         http.end();
     } else {
-        while (WiFi.status() !=
-               WL_CONNECTED) {  // ako esp32 nije spojen na WiFi u trenutku
-                                // slanja poruke (ponovno spajanje)
-            Serial.println("LostConnection, SPAJANJE!");
-            WiFi.begin(ssid, password);
-            spajanje(15000);  // esp32 se pokušava spojiti svakih 15 sekundi
-            // yield();
-        }
-        pushData();  // slanje podataka odmah nakon ponovnog spajanja
+        spoji();
     }
 }
 
@@ -202,8 +191,7 @@ void mjeri_temperaturu() {
     digitalWrite(B20_POWER, LOW);
 }
 
-String printAddress(
-    DeviceAddress deviceAddress)  // funkcija za adresu temperaturnih senzora
+String printAddress(DeviceAddress deviceAddress)  // funkcija za adresu temperaturnih senzora
 {
     String adresa = "0x";
     for (uint8_t i = 0; i < 8; i++) {
@@ -212,15 +200,9 @@ String printAddress(
     return adresa;
 }
 
-void spajanje(int t){
-  digitalWrite(GREEN_LED, HIGH);
+void spajanje(){
+  digitalWrite(GREEN_LED, LOW);
   digitalWrite(BLUE_LED, HIGH);
-  t = t/100;
-  for(int i = 0; i < t; i++){
-    digitalWrite(RED_LED, led_stanje);
-    led_stanje = !led_stanje;
-    delay(100);
-  }  
   digitalWrite(RED_LED, LOW);
 }
 
@@ -228,4 +210,66 @@ void spojeno(){
   digitalWrite(RED_LED, HIGH);
   digitalWrite(GREEN_LED, LOW);
   digitalWrite(BLUE_LED, LOW);
+}
+
+void off(){
+  digitalWrite(RED_LED, HIGH);
+  digitalWrite(GREEN_LED, HIGH);
+  digitalWrite(BLUE_LED, HIGH);
+}
+
+void spoji(){
+  spajanje();
+  WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);  
+  delay(3000);
+  Serial.println("\n Starting");
+  
+  // wm.resetSettings(); // wipe settings
+
+  if(wm_nonblocking) wm.setConfigPortalBlocking(false);
+
+  // add a custom input field
+  int customFieldLength = 40;
+  const char* custom_radio_str = "<br/><label for='customfieldid'>Custom Field Label</label><input type='radio' name='customfieldid' value='1' checked> One<br><input type='radio' name='customfieldid' value='2'> Two<br><input type='radio' name='customfieldid' value='3'> Three";
+  new (&custom_field) WiFiManagerParameter(custom_radio_str); // custom html input
+  
+  wm.addParameter(&custom_field);
+  wm.setSaveParamsCallback(saveParamCallback);
+
+  std::vector<const char *> menu = {"wifi","info","param","sep","restart","exit"};
+  wm.setMenu(menu);
+  wm.setClass("invert");
+
+  //wm.setSTAStaticIPConfig(IPAddress(10,0,1,99), IPAddress(10,0,1,1), IPAddress(255,255,255,0)); // set static ip,gw,sn
+  // wm.setConnectTimeout(20); // how long to try to connect for before continuing
+  wm.setConfigPortalTimeout(240); // auto close configportal after n seconds
+
+  bool res;
+  res = wm.autoConnect("TSC_mikroklima","password"); // password protected ap
+
+  if(!res) {
+    Serial.println("Failed to connect or hit timeout");
+    ESP.restart();
+  } 
+  else {
+    //if you get here you have connected to the WiFi    
+    spojeno();
+    Serial.println("connected...yeey :)");
+  }
+}
+
+String getParam(String name){
+  //read parameter from server, for customhmtl input
+  String value;
+  if(wm.server->hasArg(name)) {
+    value = wm.server->arg(name);
+  }
+  return value;
+}
+
+void saveParamCallback(){
+  Serial.println("[CALLBACK] saveParamCallback fired");
+  Serial.println("PARAM customfieldid = " + getParam("customfieldid"));
 }
