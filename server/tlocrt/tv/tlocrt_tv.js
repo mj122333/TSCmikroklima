@@ -4,7 +4,7 @@ function generirajSVG(){
         let prostorija = document.getElementById("_" + prost);
         if (prostorija === null) return;
         let prostorijaRect = prostorija.children[0];
-        prostorijaRect.style.fill = "#8ee09c";
+        prostorijaRect.style.fill = "#F5BF7B";
 
         //prikazivanje temperature na tlocrtu
         let x = parseFloat(prostorijaRect.getAttributeNS(null, "x"));

@@ -66,8 +66,7 @@ if (isset($data["temp"])) {
         $sql_query = "select * from TEMP where ID_SENZOR=" . $senzor_id . " ORDER BY id DESC LIMIT 1"; //Provjeravamo prošli zapis i koregiramo novi
         $result = mysqli_query($con, $sql_query);
         $row = mysqli_fetch_array($result);
-        if (($row["VRIJEDNOST"] + 1.5 < $vrijednost || $row["VRIJEDNOST"] - 1.5 > $vrijednost) && strtotime($row["VRIJEME"]) + 6000 > time())
-            continue;
+        if(($row["VRIJEDNOST"]+20< $vrijednost || $row["VRIJEDNOST"]-20> $vrijednost) && strtotime($row["VRIJEME"])+6000> time()) continue;
 
         $sql_query = "insert into TEMP (ID_SENZOR, VRIJEDNOST, VRIJEME) values (" . $senzor_id . ", " . $vrijednost . ", now())"; //Zapisujemo nove vrijednosti u tablicu TEMP
         $result = mysqli_query($con, $sql_query);

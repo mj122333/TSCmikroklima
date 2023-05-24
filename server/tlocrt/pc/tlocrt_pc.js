@@ -1,6 +1,7 @@
 function generirajSVG(){
     naziviAktivnihProstorija.forEach(function (prost){
         baterije[prost] /= 1000;
+        console.log(prost + ": " + baterije[prost] + "V");
 
         //postavljanje boje aktivnih prostorija
         let prostorija = document.getElementById("_" + prost);
@@ -119,7 +120,6 @@ function generirajSVG(){
             prostorija.append(icon);
 
             let iconElement = prostorija.querySelector("#ICON" + prost + i);
-            console.log(iconElement);
             iconElement.appendChild(tooltip);
         }
 
@@ -210,8 +210,8 @@ function generirajSVG(){
             grafIframe.addClass("graf-on");
             grafIframe.removeClass("graf-off");
             grafIframe.attr("src", "../../display/main-graph.php?prostorija=" + $(this).attr("id").substring(1));
+            $(this).children(0).first().css("stroke-width", "6px");
             $(this).siblings().children(0).css("stroke-width", "2px");
-            $(this).children(0).css("stroke-width", "6px");
         });
     });
 }

@@ -37,7 +37,7 @@ include "../tlocrt.php";
             <g id="_L31" data-name="31"><rect x="1085.6957" y="293.6957" width="280.9991" height="190.9565" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
             <g id="_L32" data-name="32"><rect x="1366.6947" y="293.6957" width="286.8941" height="190.9565" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
             <g id="_33" data-name="33"><rect x="1653.5888" y="368.4783" width="113.9716" height="116.1739" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
-            <g id="_34" data-name="L34"><rect x="1767.5605" y="293.6957" width="286.8941" height="190.9565" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
+            <g id="_MIK" data-name="L34"><rect x="1767.5605" y="293.6957" width="286.8941" height="190.9565" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
             <g id="_35" data-name="35"><rect x="2054.4546" y="368.7155" width="115.9367" height="115.9367" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
             <g id="_36" data-name="36"><rect x="2054.4546" y="578.5652" width="115.9367" height="115.9367" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
             <g id="_37" data-name="37"><rect x="1767.5605" y="578.5652" width="286.8941" height="190.9565" style="fill: #bfbfbf;stroke: #000;stroke-miterlimit: 10;stroke-width: 2px"/></g>
@@ -56,6 +56,12 @@ include "../tlocrt.php";
     var otvoreniProzori = <?php echo json_encode($otvoreni_prozori)?>;
     var greske = <?php echo json_encode($greske)?>;
     var baterije = <?php echo json_encode($baterije)?>;
+    <?php
+    if(isset($_GET["display-only"])){
+        echo 'document.querySelector("svg").style.height="100%";';
+    }
+    ?>
+
 </script>
 <script type="text/javascript" src="tlocrt_pc.js"></script>
 </html>

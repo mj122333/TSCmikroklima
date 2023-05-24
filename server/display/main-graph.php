@@ -143,8 +143,8 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
     $sql_query = "SELECT * FROM METADATA WHERE id_cvor=" . $data["ID_CVOR"] . " ORDER BY id DESC LIMIT 1";
     $result = mysqli_query($con, $sql_query);
     $metadata = mysqli_fetch_array($result);
-    print_r($metadata["napon"] / 1000);
-    ?>V
+    // print_r(($metadata["napon"] / 1000) + "V");
+    ?>
 </p>
 
 <div style="margin: 0 2.5vw">
@@ -192,7 +192,7 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
         sobnaData = downsampleTimeData(sobnaData, $max_points);
         radijatorData = downsampleTimeData(radijatorData, $max_points);
         klimaData = downsampleTimeData(klimaData, $max_points);
-        prozorData = downsampleTimeData(prozorData, $max_points);
+        prozorData = prozorData;
         ";
 
     endif;
@@ -215,6 +215,8 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     borderColor: "#F00",
                     backgroundColor: "#F00",
                     pointStyle: false,
+                    
+                    yAxisID: 'y1',
                     segment: {
                         borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
                         borderDash: ctx => skipped(ctx, [6, 6]),
@@ -230,6 +232,8 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     borderColor: "#0F0",
                     backgroundColor: "#0F0",
                     pointStyle: false,
+                    
+                    yAxisID: 'y1',
                     segment: {
                         borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
                         borderDash: ctx => skipped(ctx, [6, 6]),
@@ -245,6 +249,8 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     borderColor: "#22F",
                     backgroundColor: "#22F",
                     pointStyle: false,
+                    
+                    yAxisID: 'y1',
                     segment: {
                         borderColor: ctx => skipped(ctx, 'rgb(0,0,0,0.2)'),
                         borderDash: ctx => skipped(ctx, [6, 6]),
@@ -290,6 +296,7 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                         }
                     }
                 },
+
                 y1: {
                     type: 'linear',
                     position: 'left',
@@ -298,6 +305,7 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     border: {
                         color: "red"
                     }
+
                 },
                 y2: {
                     type: 'category',
@@ -314,7 +322,7 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
             plugins: {
                 title: {
                     display: true,
-                    text: 'Temperatura - otvoreni prozor',
+                    text: '<?php echo $_GET["prostorija"] ?> Temperatura - otvoreni prozor',
                 },
                 legend: {
                     display: (window.innerWidth >= 640 ? true : false)
@@ -335,11 +343,12 @@ $prozorData = rtrim(str_replace("\n", "", $dataset), ",") . "]";
                     },
                 },
             },
+
             onAfterUpdate: function (chart) {
                 const xAxis = chart.scales.x;
                 const range = xAxis.max - xAxis.min;
                 updateTimeFormat(chart, range);
             }
-        }
+        },
     });
 </script>
