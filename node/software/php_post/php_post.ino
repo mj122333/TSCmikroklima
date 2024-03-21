@@ -244,7 +244,7 @@ void spoji(){
 
   //wm.setSTAStaticIPConfig(IPAddress(10,0,1,99), IPAddress(10,0,1,1), IPAddress(255,255,255,0)); // set static ip,gw,sn
   // wm.setConnectTimeout(20); // how long to try to connect for before continuing
-  wm.setConfigPortalTimeout(240); // auto close configportal after n seconds
+  wm.setConfigPortalTimeout(60); // auto close configportal after n seconds
 
   bool res;
   res = wm.autoConnect("TSC_mikroklima","password"); // password protected ap
